@@ -2,8 +2,6 @@ name: Apply GrantGPT Rebranding
 
 on:
   workflow_dispatch: # Allows manual triggering
-  push:
-    branches: [ develop ] # Triggers on pushes to the develop branch
 
 permissions:
   contents: write # Required to push changes back to the repository
@@ -154,5 +152,8 @@ jobs:
           git add .
           git commit -m "chore: Apply automated GrantGPT rebranding"
           # Push to the branch that triggered the workflow
+          # Note: Since this only runs on workflow_dispatch, github.ref_name might not be what's expected.
+          # Consider adding an input to specify the branch or pushing to a fixed branch like 'main'.
+          # For now, keeping it as is, assuming manual trigger implies intent to push to the selected branch.
           git push origin HEAD:${{ github.ref_name }}
           echo "Committed and pushed rebranding changes."
