@@ -1,0 +1,122 @@
+name: Apply GrantGPT Rebranding
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  push:
+    branches: [ develop ] # Triggers on pushes to the develop branch
+
+permissions:
+  contents: write # Required to push changes back to the repository
+
+jobs:
+  rebrand:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history to properly push changes
+          token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
+
+      - name: Apply Text Rebranding (Onyx -> GrantGPT)
+        run: |
+          # Target specific file types and directories
+          # Use patterns to match "Onyx" within quotes or JSX text, avoiding variable/function names
+          # Add more file patterns or directories if needed
+          find ./web/src ./backend/onyx ./README.md \
+            \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
+            -type f \
+            # Use Extended Regex (-E) for word boundaries (\b)
+            # Target only "Onyx" in double quotes or as HTML/JSX text content
+            -exec sed -i -E \
+              -e 's/"\bOnyx\b"/"GrantGPT"/g' \
+              -e 's/>\bOnyx\b</>GrantGPT</g' \
+              {} +
+          echo "Text replacement complete (using safer patterns)."
+
+      - name: Replace Logos
+        run: |
+          # Ensure the target directory exists
+          mkdir -p web/public
+          # Copy GrantGPT logos over Onyx logos
+          # Assumes GrantHive-logo directory is present at the root of the repo
+          # If GrantHive-logo is not in the repo, this step needs adjustment (e.g., checkout another repo, download)
+          if [ -f GrantHive-logo/logo.svg ]; then
+            cp GrantHive-logo/logo.svg web/public/logo.svg
+            echo "Replaced onyx-logo.svg"
+          else
+            echo "Warning: GrantHive-logo/logo.svg not found."
+          fi
+          if [ -f GrantHive-logo/logo.png ]; then
+            cp GrantHive-logo/logo.png web/public/logo.png
+            echo "Replaced onyx logo.png"
+          else
+            echo "Warning: GrantHive-logo/logo.png not found."
+          fi
+          if [ -f GrantHive-logo/favicon.ico ]; then
+            cp GrantHive-logo/favicon.ico web/public/onyx.ico
+            echo "Replaced onyx.ico"
+          else
+            echo "Warning: GrantHive-logo/favicon.ico not found."
+          fi
+
+      - name: Apply Design & Color Adjustments
+        run: |
+          # Target the global CSS file where Onyx variables are defined
+          TARGET_FILE="./web/src/app/globals.css"
+          if [ -f "$TARGET_FILE" ]; then
+            echo "Applying color changes to $TARGET_FILE"
+
+            # Use sed with specific variable definitions found in globals.css
+            # Escape special characters like '/' in sed patterns if needed, but hex codes are safe.
+            # Use a different delimiter like '|' if '/' causes issues with paths/values.
+
+            # Light Mode (:root) Replacements
+            sed -i 's/--background: #fefcfa;/--background: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--primary: 0 0% 9%;/--primary: #133075;/g' $TARGET_FILE # Mapped to GrantGPT Navy Text
+            sed -i 's/--secondary: 0 0% 96.1%;/--secondary: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--accent: 0 0% 96.1%;/--accent: #7B68EE;/g' $TARGET_FILE # Mapped to GrantGPT Lavender
+            sed -i 's/--link: #3b82f6;/--link: #0A2463;/g' $TARGET_FILE # Mapped to GrantGPT Navy
+            sed -i 's/--neutral-800: #262626;/--neutral-800: #133075;/g' $TARGET_FILE # Mapped to GrantGPT Navy Text
+            sed -i 's/--neutral-900: #111827;/--neutral-900: #133075;/g' $TARGET_FILE # Mapped to GrantGPT Navy Text
+            sed -i 's/--neutral-500: #737373;/--neutral-500: #5D5B8D;/g' $TARGET_FILE # Mapped to GrantGPT Muted Lavender
+            sed -i 's/--agent: #e47011;/--agent: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--agent-sidebar: #be5d0e;/--agent-sidebar: #0A2463;/g' $TARGET_FILE # Mapped to GrantGPT Navy
+            sed -i 's/--alert: #f59e0b;/--alert: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--success: #030706;/--success: #3CAEA3;/g' $TARGET_FILE # Mapped to GrantGPT Teal
+            sed -i 's/--light-success: #22c55e;/--light-success: #3CAEA3;/g' $TARGET_FILE # Mapped to GrantGPT Teal
+
+            # Dark Mode (.dark) Replacements
+            sed -i 's/--background-input-background: #1f1f1f;/--background-input-background: #121212;/g' $TARGET_FILE
+            sed -i 's/--card: #1f1f1f;/--card: #1E1E1E;/g' $TARGET_FILE
+            sed -i 's/--primary: 0 0% 80%;/--primary: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
+            sed -i 's/--neutral-950: #f0f0f0;/--neutral-950: #F8F9FA;/g' $TARGET_FILE # Mapped to GrantGPT Dark Text
+            sed -i 's/--neutral-800: #d4d4d4;/--neutral-800: #F8F9FA;/g' $TARGET_FILE # Mapped to GrantGPT Dark Text
+            # Note: Replacing border with rgba requires careful escaping if using '/' delimiter. Using '|' instead.
+            sed -i 's|--border: #5a5a5a;|--border: rgba(255, 255, 255, 0.1);|g' $TARGET_FILE # Mapped to GrantGPT Dark Border
+            sed -i 's/--agent: #e47011;/--agent: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--agent-sidebar: #be5d0e;/--agent-sidebar: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
+
+            echo "Color adjustments applied to $TARGET_FILE."
+          else
+            echo "Warning: $TARGET_FILE not found. Skipping color adjustments."
+          fi
+
+          echo "Design and color adjustments step complete."
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Check if there are any changes
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git add .
+          git commit -m "chore: Apply automated GrantGPT rebranding"
+          # Push to the branch that triggered the workflow
+          git push origin HEAD:${{ github.ref_name }}
+          echo "Committed and pushed rebranding changes."
