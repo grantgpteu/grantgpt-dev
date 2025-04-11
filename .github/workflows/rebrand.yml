@@ -35,7 +35,7 @@ jobs:
           which sed
           echo "Tools check complete."
 
-      - name: Debug: List files targeted for rebranding
+      - name: "Debug: List files targeted for rebranding"
         run: |
           echo "Files targeted for text replacement:"
           find ./web/src ./backend/onyx ./README.md \
