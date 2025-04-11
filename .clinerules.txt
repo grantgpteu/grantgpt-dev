@@ -1,0 +1,36 @@
+# .clinerules - Project Intelligence for GrantGPT
+
+This file captures key patterns, preferences, and project intelligence discovered while working on the GrantGPT project.
+
+## Core Workflow: Memory Bank Management
+
+*   **Initialization/Update:** When starting a session or requested via "update memory bank":
+    1.  Read ALL files in `memory-bank/` directory (`projectbrief.md`, `productContext.md`, `activeContext.md`, `systemPatterns.md`, `techContext.md`, `progress.md`, and any others like `design-guidelines.md`).
+    2.  If templates are found, gather context (e.g., list files, read key configs like `package.json`, `pyproject.toml`) to understand the current state.
+    3.  Propose content updates for each template file in PLAN MODE.
+    4.  Review this `.clinerules` file.
+    5.  Once content is approved, switch to ACT MODE and use `write_to_file` for each updated Memory Bank file.
+*   **Ongoing Updates:** Update `activeContext.md` and `progress.md` after significant actions or at the end of a work session in ACT MODE. Update other files as new patterns or context emerge.
+
+## Core Workflow: Upstream Sync & Rebranding (Based on projectbrief.md)
+
+1.  **Verify Git Remotes:** Ensure `origin` (GrantGPT fork, push) and `upstream` (Onyx, fetch only) are correct. (`git remote -v`)
+2.  **Fetch Upstream:** `git fetch upstream`
+3.  **Integrate Changes:** Merge or Rebase `upstream/main` (or relevant branch) into the local working branch. Prioritize Rebase for cleaner history if feasible, but use Merge if complex conflicts arise or history needs preservation.
+4.  **Conflict Resolution:** Carefully resolve conflicts, prioritizing upstream updates while preserving GrantGPT specifics where needed. **Pay extreme attention to `.gitignore`d files - they must NOT be overwritten.** Consider backing them up before major operations.
+5.  **Rebrand - Text:** Use search/replace tools (e.g., `search_files`, `replace_in_file`) to change "Onyx" to "GrantGPT" in tracked files. Be mindful of case sensitivity and context (e.g., avoid changing URLs or package names if not intended).
+6.  **Rebrand - Visuals:** Identify styling files (e.g., `web/tailwind.config.js`, `web/src/styles/globals.css`) and apply colors/styles from `memory-bank/design-guidelines.md` using `replace_in_file` or `write_to_file`.
+7.  **Verification:**
+    *   Check `git status` (should be clean after commits).
+    *   Review changes (`git diff`, `git log`).
+    *   Check ignored files (`git status --ignored`, manual inspection).
+    *   Confirm no pushes to `upstream` (`git log --branches --remotes`).
+8.  **Commit Changes:** Commit sync and rebranding changes locally.
+9.  **Push to Origin:** `git push origin <branch_name>` - **NEVER `git push upstream`**.
+10. **Update Memory Bank:** Document the sync/rebrand process and outcome in `activeContext.md` and `progress.md`.
+
+## Key Project Constraints
+
+*   **NEVER push to `upstream` repository.**
+*   **ALWAYS preserve files listed in `.gitignore`.**
+*   Rebranding (text & visual) happens directly in the codebase.

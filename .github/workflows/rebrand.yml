@@ -18,21 +18,37 @@ jobs:
           fetch-depth: 0 # Fetch all history to properly push changes
           token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
 
+      - name: Check Required Tools
+        run: |
+          echo "Checking for find and sed..."
+          which find
+          which sed
+          echo "Tools check complete."
+
       - name: Apply Text Rebranding (Onyx -> GrantGPT)
         run: |
+          echo "Starting text replacement..."
           # Target specific file types and directories
           # Use patterns to match "Onyx" within quotes or JSX text, avoiding variable/function names
           # Add more file patterns or directories if needed
           find ./web/src ./backend/onyx ./README.md \
             \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
             -type f \
+            # Use sed -i'.bak' for cross-platform compatibility (creates backup files)
             # Use Extended Regex (-E) for word boundaries (\b)
-            # Target only "Onyx" in double quotes or as HTML/JSX text content
-            -exec sed -i -E \
-              -e 's/"\bOnyx\b"/"GrantGPT"/g' \
-              -e 's/>\bOnyx\b</>GrantGPT</g' \
+            # Use double-escaped \\b for shell interpretation
+            # Target only "\bOnyx\b" in double quotes or >\bOnyx\b< as HTML/JSX text content
+            -exec sed -i'.bak' -E \
+              -e 's/"\\bOnyx\\b"/"GrantGPT"/g' \
+              -e 's/>\\bOnyx\\b</>GrantGPT</g' \
               {} +
-          echo "Text replacement complete (using safer patterns)."
+          echo "Text replacement attempted (using safer patterns)."
+
+      - name: Clean up backup files
+        run: |
+          echo "Cleaning up .bak files created by sed..."
+          find . -name '*.bak' -delete
+          echo "Backup files cleaned up."
 
       - name: Replace Logos
         run: |
