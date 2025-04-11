@@ -20,13 +20,13 @@
     --neutral-200: #d4d4d4;
     --neutral-300: #d4d4d4;
     --neutral-400: #a3a3a3;
-    --neutral-500: #737373;
+    --neutral-500: #5D5B8D;
     --neutral-600: #525252;
     --neutral-600-border-dark: #525252;
     --neutral-600: #525252;
     --neutral-700: #404040;
-    --neutral-800: #262626;
-    --neutral-900: #111827;
+    --neutral-800: #133075;
+    --neutral-900: #133075;
     --neutral-950: #0a0a0a;
 
     --hover: var(--neutral-200);
@@ -34,7 +34,7 @@
     /* -------------------------------------------------------
      * 2. Keep special, custom, or near-duplicate background
      * ------------------------------------------------------- */
-    --background: #fefcfa; /* slightly off-white */
+    --background: #F8F9FA; /* slightly off-white */
     --background-50: #fffdfb; /* a little lighter than background but not quite white */
     --input-background: #fefcfa;
     --input-border: #f1eee8;
@@ -61,13 +61,13 @@
     --card-foreground: #0c0c0c;
     --popover: #ffffff;
     --popover-foreground: #0c0c0c;
-    --primary: 0 0% 9%;
+    --primary: #133075;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
+    --secondary: #FFD166;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
+    --accent: #7B68EE;
     --accent-foreground: 0 0% 9%;
     --accent-background: #f0eee8;
     --accent-background-hovered: #e5e3dd;
@@ -83,15 +83,15 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --link: #3b82f6;
+    --link: #0A2463;
     --link-hover: #1d4ed8;
 
     /* Status, success, alerts, etc. */
     --error: #f87171;
     --undo: #ef4444;
-    --success: #030706;
-    --light-success: #22c55e;
-    --alert: #f59e0b;
+    --success: #3CAEA3;
+    --light-success: #3CAEA3;
+    --alert: #FFD166;
     --accent-hover: #4f46e5;
     --black: #000000;
     --white: #ffffff;
@@ -121,9 +121,9 @@
     --scrollbar-dark-thumb-hover: #c7cdd2;
 
     /* agent references */
-    --agent-sidebar: #be5d0e;
+    --agent-sidebar: #0A2463;
     --agent-hovered: #d16b10;
-    --agent: #e47011;
+    --agent: #FFD166;
     --lighter-agent: #f59e0b;
 
     /* Consolidated color variables */
@@ -217,9 +217,9 @@
     --neutral-500: #757575;
     --neutral--neutral-600-border-dark: #a0a0a0;
     --neutral-700: #bdbdbd;
-    --neutral-800: #d4d4d4;
+    --neutral-800: #F8F9FA;
     --neutral-900: #d4d4d4;
-    --neutral-950: #f0f0f0; /* lightest */
+    --neutral-950: #F8F9FA; /* lightest */
     --hover: #2c2c2c;
 
     --input-text: #b4b4b4;
@@ -229,7 +229,7 @@
     /* -------------------------------------------------------
      * 2. Special / custom backgrounds (shifted to dark)
      * ------------------------------------------------------- */
-    --background-input-background: #1f1f1f;
+    --background-input-background: #121212;
     --input-background: #303030;
     --input-border: #5a5a5a;
 
@@ -265,13 +265,13 @@
 
     /* Additional single-purpose color vars (inverted where sensible) */
     --foreground: 0 0% 95%; /* light text on dark bg (was 0 0% 3.9%) */
-    --card: #1f1f1f;
+    --card: #1E1E1E;
     --card-foreground: #f3f3f3;
     --popover: #1f1f1f;
     --popover-foreground: #f2f2f2;
 
     /* You can invert "primary"/"secondary" or pick your own scales */
-    --primary: 0 0% 80%; /* lighter gray for emphasis */
+    --primary: #3D56A6; /* lighter gray for emphasis */
     --primary-foreground: 0 0% 10%; /* dark text if placed on "primary" */
     --secondary: 0 0% 25%;
     --secondary-foreground: 0 0% 90%;
@@ -295,7 +295,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --link: #3b82f6;
+    --link: #0A2463;
     --link-hover: #1d4ed8;
 
     /* Status, success, alerts, etc. – can keep or adjust as needed */
@@ -303,7 +303,7 @@
     --undo: #ef4444;
     --success: #22c55e; /* bright green stands out on dark */
     --light-success: #86efac;
-    --alert: #f59e0b;
+    --alert: #FFD166;
     --accent-hover: #4f46e5;
     --black: #ffffff;
     --white-card-popover: #000000;
@@ -343,9 +343,9 @@
     --scrollbar-dark-thumb-hover: #909090;
 
     /* Agent references */
-    --agent-sidebar: #be5d0e; /* You can keep or lighten/darken if desired */
+    --agent-sidebar: #0A2463; /* You can keep or lighten/darken if desired */
     --agent-hovered: #f07c13;
-    --agent: #e47011;
+    --agent: #FFD166;
     --lighter-agent: #f59e0b;
   }
 }
