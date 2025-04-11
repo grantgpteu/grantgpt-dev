@@ -18,12 +18,32 @@ jobs:
           fetch-depth: 0 # Fetch all history to properly push changes
           token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
 
-      - name: Check Required Tools
+      - name: Check and Install Required Tools
         run: |
           echo "Checking for find and sed..."
+          if ! command -v sed &> /dev/null; then
+            echo "sed not found. Installing..."
+            sudo apt-get update && sudo apt-get install -y sed
+          else
+            echo "sed found."
+          fi
+          if ! command -v find &> /dev/null; then
+             echo "find not found. This is unexpected on ubuntu-latest."
+             exit 1
+          else
+             echo "find found."
+          fi
           which find
           which sed
           echo "Tools check complete."
+
+      - name: Debug: List files targeted for rebranding
+        run: |
+          echo "Files targeted for text replacement:"
+          find ./web/src ./backend/onyx ./README.md \
+            \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
+            -type f \
+            -print
 
       - name: Apply Text Rebranding (Onyx -> GrantGPT)
         run: |
@@ -34,15 +54,15 @@ jobs:
           find ./web/src ./backend/onyx ./README.md \
             \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
             -type f \
-            # Use sed -i'.bak' for cross-platform compatibility (creates backup files)
+            # Use sed -i.bak (no quotes) for cross-platform compatibility (creates backup files)
             # Use Extended Regex (-E) for word boundaries (\b)
             # Use double-escaped \\b for shell interpretation
-            # Target only "\bOnyx\b" in double quotes or >\bOnyx\b< as HTML/JSX text content
-            -exec sed -i'.bak' -E \
+            # Target only "\bOnyx\b" in double quotes or >\bOnyx\b< as HTML/JSX text content (Safer patterns)
+            -exec sed -i.bak -E \
               -e 's/"\\bOnyx\\b"/"GrantGPT"/g' \
               -e 's/>\\bOnyx\\b</>GrantGPT</g' \
               {} +
-          echo "Text replacement attempted (using safer patterns)."
+          echo "Text replacement attempted (using safer patterns and -i.bak syntax)."
 
       - name: Clean up backup files
         run: |
