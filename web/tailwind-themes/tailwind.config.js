@@ -77,17 +77,20 @@ module.exports = {
         "searchbar-max": "800px",
       },
       colors: {
-        // code styling
-        "code-bg": "#000",
-        "code-text": "var(--code-text)",
-        "token-comment": "var(--token-comment)",
-        "token-punctuation": "var(--token-punctuation)",
-        "token-property": "var(--token-property)",
-        "token-selector": "var(--token-selector)",
-        "token-atrule": "var(--token-atrule)",
-        "token-function": "var(--token-function)",
-        "token-regex": "var(--token-regex)",
-        "token-attr-name": "var(--token-attr-name)",
+        code: {
+          bg: "#282c34", // Common dark background for code
+          text: "#abb2bf", // Light gray text
+        },
+        token: {
+          comment: "#5c6370", // Gray for comments
+          punctuation: "#abb2bf", // Same as text
+          property: "#d19a66", // Orange/Brown for properties
+          selector: "#e06c75", // Red/Pink for selectors/strings
+          atrule: "#c678dd", // Purple for atrules/keywords
+          function: "#61afef", // Blue for functions
+          regex: "#98c379", // Green for regex/variables
+          "attr-name": "#e06c75", // Same as selector
+        },
         "non-selectable": "var(--non-selectable)",
 
         "gray-background": "var(--gray-background)",
@@ -374,7 +377,9 @@ module.exports = {
       },
       fontSize: {
         "2xs": "0.625rem",
-        "code-sm": "small",
+        code: {
+          sm: "0.875rem", // text-sm
+        },
         "tremor-label": ["0.75rem"],
         "tremor-default": ["0.875rem", { lineHeight: "1.25rem" }],
         "tremor-title": ["1.125rem", { lineHeight: "1.75rem" }],
@@ -382,10 +387,14 @@ module.exports = {
       },
       fontWeight: {
         description: "375",
-        "token-bold": "bold",
+        token: {
+          bold: "700", // bold
+        },
       },
       fontStyle: {
-        "token-italic": "italic",
+        token: {
+          italic: "italic",
+        },
       },
       calendar: {
         // Light mode

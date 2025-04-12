@@ -3,8 +3,75 @@
 @tailwind utilities;
 
 @layer base {
-  @import "../../tailwind-themes/custom/grantgpt/index.css"; /* Use Tailwind import within layer */
+  /* GrantGPT Custom Theme CSS Variables */
+  /* Overrides base Shadcn/UI variables */
   :root {
+    --background: #F8F9FA; /* GrantGPT Off-White */
+    --foreground: #133075; /* GrantGPT Deep Navy Text */
+    --card: #FFFFFF; /* Default White */
+    --card-foreground: #133075; /* GrantGPT Deep Navy Text */
+    --popover: #FFFFFF; /* Default White */
+    --popover-foreground: #133075; /* GrantGPT Deep Navy Text */
+    --primary: #0A2463; /* GrantGPT Deep Navy Blue */
+    --primary-foreground: #F8F9FA; /* GrantGPT Off-White */
+    --secondary: #FFD166; /* GrantGPT Honey Gold */
+    --secondary-foreground: #133075; /* GrantGPT Deep Navy Text */
+    --muted: #E9ECEF; /* Lighter gray for muted */
+    --muted-foreground: #5D5B8D; /* GrantGPT Muted Lavender */
+    --accent: #7B68EE; /* GrantGPT Lavender Purple */
+    --accent-foreground: #FFFFFF; /* White */
+    --destructive: #DC3545; /* Standard destructive red */
+    --destructive-foreground: #FFFFFF; /* White */
+    --border: #DEE2E6; /* Light gray border */
+    --input: #CED4DA; /* Input border */
+    --ring: #0A2463; /* GrantGPT Deep Navy Blue for focus */
+    --radius: 0.375rem; /* Tailwind's rounded-md */
+
+    /* GrantGPT Specific Colors (can be used alongside Shadcn vars) */
+    --color-teal: #3CAEA3;
+    --color-text-subtitle: #3D56A6;
+    --color-text-highlight: #6A5ACD;
+  }
+
+  .dark {
+    --background: #121212; /* GrantGPT Dark Background */
+    --foreground: #F8F9FA; /* GrantGPT Off-White Text */
+    --card: #1E1E1E; /* GrantGPT Dark Card */
+    --card-foreground: #F8F9FA; /* GrantGPT Off-White Text */
+    --popover: #1E1E1E; /* GrantGPT Dark Card */
+    --popover-foreground: #F8F9FA; /* GrantGPT Off-White Text */
+    --primary: #3D56A6; /* GrantGPT Dark Primary */
+    --primary-foreground: #F8F9FA; /* GrantGPT Off-White Text */
+    --secondary: #FFD166; /* GrantGPT Honey Gold */
+    --secondary-foreground: #133075; /* GrantGPT Deep Navy Text */
+    --muted: #343A40; /* Darker muted */
+    --muted-foreground: #ADB5BD; /* Lighter muted text */
+    --accent: #7B68EE; /* GrantGPT Lavender Purple */
+    --accent-foreground: #FFFFFF; /* White */
+    --destructive: #E57373; /* Lighter red for dark mode */
+    --destructive-foreground: #121212; /* Dark text */
+    --border: rgba(255, 255, 255, 0.1); /* GrantGPT Dark Border */
+    --input: rgba(255, 255, 255, 0.1); /* GrantGPT Dark Border */
+    --ring: #3D56A6; /* GrantGPT Dark Primary for focus */
+
+    /* GrantGPT Specific Colors */
+    --color-teal: #3CAEA3;
+    --color-text-subtitle: #879FFF; /* Lighter Royal Blue */
+    --color-text-highlight: #B1A7F5; /* Lighter Bright Purple */
+  }
+
+  :root {
+    /* Code syntax highlighting */
+    --code-text: #d4d4d4;
+    --token-comment: #608b4e;
+    --token-punctuation: #d4d4d4;
+    --token-property: #569cd6;
+    --token-selector: #e07b53;
+    --token-atrule: #d18ad8;
+    --token-function: #f0e68c;
+    --token-regex: #9cdcfe;
+    --token-attr-name: #9cdcfe;
+
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
 
@@ -563,14 +630,14 @@ body {
 
 /* Base styles for code blocks */
 .prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-  background-color: theme("colors.code-bg");
-  font-size: theme("fontSize.code-sm");
+  background-color: theme("colors.code.bg");
+  font-size: theme("fontSize.code.sm");
   color: #fff;
 }
 
 pre[class*="language-"],
 code[class*="language-"] {
-  color: theme("colors.code-text");
+  color: theme("colors.code.text");
 }
 
 /* Token styles */
@@ -578,7 +645,7 @@ code[class*="language-"] {
 .code-line .token.prolog,
 .code-line .token.doctype,
 .code-line .token.cdata {
-  color: theme("colors.token-comment");
+  color: theme("colors.token.comment");
 }
 
 .code-line .token.punctuation,
@@ -587,7 +654,7 @@ code[class*="language-"] {
 .code-line .token.url,
 .code-line .language-css .token.string,
 .code-line .style .token.string {
-  color: theme("colors.token-punctuation");
+  color: theme("colors.token.punctuation");
 }
 
 .code-line .token.property,
@@ -598,7 +665,7 @@ code[class*="language-"] {
 .code-line .token.symbol,
 .code-line .token.deleted,
 .code-line .token.tag .token.punctuation {
-  color: theme("colors.token-property");
+  color: theme("colors.token.property");
 }
 
 .code-line .token.selector,
@@ -609,32 +676,32 @@ code[class*="language-"] {
 .code-line .token.inserted,
 .code-line .token.attr-value,
 .code-line .token.attr-value .token.punctuation {
-  color: theme("colors.token-selector");
+  color: theme("colors.token.selector");
 }
 
 .code-line .token.atrule,
 .code-line .token.keyword {
-  color: theme("colors.token-atrule");
+  color: theme("colors.token.atrule");
 }
 
 .code-line .token.function,
 .code-line .token.class-name {
-  color: theme("colors.token-function");
+  color: theme("colors.token.function");
 }
 
 .code-line .token.regex,
 .code-line .token.important,
 .code-line .token.variable {
-  color: theme("colors.token-regex");
+  color: theme("colors.token.regex");
 }
 
 .code-line .token.important,
 .code-line .token.bold {
-  font-weight: theme("fontWeight.token-bold");
+  font-weight: theme("fontWeight.token.bold");
 }
 
 .code-line .token.italic {
-  font-style: theme("fontStyle.token-italic");
+  font-style: theme("fontStyle.token.italic");
 }
 
 .code-line .token.entity {
@@ -642,7 +709,7 @@ code[class*="language-"] {
 }
 
 .code-line .token.attr-name {
-  color: theme("colors.token-attr-name");
+  color: theme("colors.token.attr-name");
 }
 
 form {
