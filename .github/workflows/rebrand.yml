@@ -16,6 +16,17 @@ jobs:
           fetch-depth: 0 # Fetch all history to properly push changes
           token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Use a recent Python 3 version
+
+      - name: Generate Custom Theme Files
+        run: |
+          echo "Generating custom theme CSS and Tailwind config..."
+          python scripts/generate-theme.py
+          echo "Theme files generated."
+
       - name: Check and Install Required Tools
         run: |
           echo "Checking for find and sed..."

@@ -14,25 +14,25 @@
 
 ## What's Left to Build / Do
 
-*   **Verify Functionality:** Test the application after the recent Git reset to ensure core functionality inherited from `upstream/main` works as expected with the preserved `.github` directory.
+*   **Verify Rebranding:** Visually inspect the application (once deployed or locally built from `origin/main`) to confirm the automated rebranding applied correctly via `rebrand.yml`.
+*   **Test Deployment Workflow:** Test the updated deployment process defined in `.github/workflows/deploy-dev.yml`.
+*   **Test Let's Encrypt Script:** Test the updated `deployment/docker_compose/init-letsencrypt.sh` script in a relevant environment.
 *   **Future Sync/Rebrand:** Plan and execute the next synchronization and rebranding cycle when required.
 *   **Refine Memory Bank:** Continuously update Memory Bank files as the project evolves and deeper understanding is gained.
-*   **Commit & Push Workflow Revert:** Commit the reverted change to `.github/workflows/deploy-dev.yml` (removing `--no-cache`) and push to `origin/main`.
-*   **Verify Next Build:** Monitor the GitHub Actions build triggered by the push. If it fails again with the original syntax error, the server-side Docker cache is likely the culprit, requiring further action (e.g., `docker builder prune`).
+*   **Local Sync (Optional):** Decide if/when to synchronize the local repository with `origin/main`.
 
-## Current Status (as of 2025-09-04)
+## Current Status (as of 2025-11-04)
 
-*   **Repository Reset:** The repository has been reset to match `upstream/main` (commit `9b6c762...`) while preserving the `.github` directory from the previous state (`6765905...`). The current HEAD is `46b0a04...`.
-*   **No Rebranding:** The codebase currently reflects Onyx branding (except for `.github` contents).
-*   **Previous State (as of 2025-08-04):**
-    *   Successfully merged `upstream/main`.
-    *   Resolved post-merge errors.
-    *   Applied text and visual rebranding.
-    *   Changes were committed locally. (Note: This history was overwritten by the recent reset).
+*   **Repository State (`origin/main`):** The `origin/main` branch is at commit `175c4dc51426667f6d128c655c75ad48b61fbe2f`.
+*   **Rebranding:** The codebase on `origin/main` has been automatically rebranded (text, logos, CSS colors) via the `rebrand.yml` workflow. Visual confirmation is pending.
+*   **Workflow/Scripts:** The deployment workflow (`.github/workflows/deploy-dev.yml`) and the Let's Encrypt script (`deployment/docker_compose/init-letsencrypt.sh`) have been updated on `origin/main`.
+*   **Local State:** The local repository is currently *behind* `origin/main` and reflects an older state from 2025-09-04.
+*   **Previous State (as of 2025-09-04):**
+    *   Repository was reset to `upstream/main` (`9b6c762...`) preserving `.github` from `6765905...`. Local HEAD was `46b0a04...`.
+    *   Codebase reflected Onyx branding (except `.github`).
+    *   History prior to the reset was overwritten locally.
 
 ## Known Issues / Bugs
 
-*   **History Overwritten:** The `git reset --hard` operations performed on 2025-09-04 have overwritten the previous local commit history, including the merge and rebranding work from 2025-08-04. The repository history now largely mirrors `upstream/main` up to commit `9b6c762...`, plus the commit restoring `.github`.
-*   **Text Rebranding Scope (Previous State):** Prior searches suggested minimal "Onyx" text in core source code. This may no longer be relevant as the code now matches upstream.
-*   **Build Failure Investigation (2025-09-04):** Investigated a GitHub Actions build failure on `main`. The failure was caused by a syntax error in `web/src/app/chat/ChatPage.tsx` (commit `082dbe9`), but this error is not present in the current `main` branch code.
-*   **Workflow Fix Attempted & Reverted (2025-09-04):** Attempted adding `--no-cache` flag to `docker compose up --build` in `.github/workflows/deploy-dev.yml` to address potential Docker build cache issues on the deployment server. This failed due to an incompatible `docker compose` version on the server (`unknown flag: --no-cache`). The `--no-cache` flag was subsequently removed from the workflow file. The root cause (likely server-side Docker cache) remains unresolved if the build fails again.
+*   **Local Repository Out of Sync:** The local repository does not reflect the latest changes present on `origin/main` (commit `175c4dc...`).
+*   **Rebranding Verification Pending:** The outcome of the automated rebranding (`rebrand.yml`) has not been visually verified.
