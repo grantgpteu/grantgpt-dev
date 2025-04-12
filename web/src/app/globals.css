@@ -1,4 +1,4 @@
-@tailwind base;
+@import '../../web/tailwind-themes/custom/grantgpt/index.css';\n@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
