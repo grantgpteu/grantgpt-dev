@@ -1,6 +1,4 @@
-@import "../../tailwind-themes/custom/grantgpt/index.css";
-
-@tailwind base;
+@import "../../tailwind-themes/custom/grantgpt/index.css";\n/* Theme Import Placeholder */\n@import '../../web/tailwind-themes/custom/grantgpt/index.css';\n@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
