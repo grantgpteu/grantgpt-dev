@@ -1,6 +1,6 @@
 module.exports = {
   plugins: {
-    'postcss-import': {}, // Use object syntax with string keys
+    'postcss-import': {}, // Add plugin using object syntax
     'tailwindcss': {},
     'autoprefixer': {},
   },

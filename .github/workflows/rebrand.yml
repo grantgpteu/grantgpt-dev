@@ -16,25 +16,6 @@ jobs:
           fetch-depth: 0 # Fetch all history to properly push changes
           token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x' # Use a recent Python 3 version
-
-      - name: Generate Custom Theme Files
-        run: |
-          echo "Generating custom theme CSS and Tailwind config..."
-          python scripts/generate-theme.py
-          echo "Theme files generated."
-
-      - name: Debug Generated Files
-        run: |
-          echo "--- Checking generated theme file ---"
-          ls -la web/tailwind-themes/custom/grantgpt/
-          echo "--- Checking start of globals.css ---"
-          head -n 5 web/src/app/globals.css
-          echo "--- End Debug ---"
-
       - name: Check and Install Required Tools
         run: |
           echo "Checking for find and sed..."
@@ -151,13 +132,6 @@ jobs:
           fi
 
           echo "Design and color adjustments step complete."
-
-      - name: Install Web Dependencies
-        working-directory: ./web
-        run: |
-          echo "Installing web dependencies..."
-          npm install
-          echo "Web dependencies installed."
 
       - name: Commit and Push Changes
         run: |
