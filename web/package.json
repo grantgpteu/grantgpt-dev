@@ -4,9 +4,9 @@
   "version-comment": "version field must be SemVer or chromatic will barf",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
-    "build": "next build",
-    "start": "next start",
+    "dev": "NEXT_PUBLIC_THEME=grantgpt next dev --turbo",
+    "build": "NEXT_PUBLIC_THEME=grantgpt next build",
+    "start": "NEXT_PUBLIC_THEME=grantgpt next start",
     "lint": "next lint",
     "test": "jest"
   },
