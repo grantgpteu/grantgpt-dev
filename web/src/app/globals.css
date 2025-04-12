@@ -1,8 +1,9 @@
-@import "../../tailwind-themes/custom/grantgpt/index.css";\n/* Theme Import Placeholder */\n@import '../../web/tailwind-themes/custom/grantgpt/index.css';\n@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  @import "../../tailwind-themes/custom/grantgpt/index.css"; /* Use Tailwind import within layer */
   :root {
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
