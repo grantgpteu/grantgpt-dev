@@ -27,6 +27,14 @@ jobs:
           python scripts/generate-theme.py
           echo "Theme files generated."
 
+      - name: Debug Generated Files
+        run: |
+          echo "--- Checking generated theme file ---"
+          ls -la web/tailwind-themes/custom/grantgpt/
+          echo "--- Checking start of globals.css ---"
+          head -n 5 web/src/app/globals.css
+          echo "--- End Debug ---"
+
       - name: Check and Install Required Tools
         run: |
           echo "Checking for find and sed..."

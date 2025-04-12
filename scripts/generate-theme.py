@@ -99,8 +99,17 @@ module.exports = {{
     return config_content
 
 
-def update_global_css(theme_css_path):
-    import_statement = f"@import '../../{theme_css_path}';"
+def update_global_css():
+    # Define the correct relative path from GLOBAL_CSS to the theme CSS
+    # correct_relative_path = "../../tailwind-themes/custom/grantgpt/index.css"
+    # Use double quotes for the import statement
+    # import_statement = f'@import "{correct_relative_path}";'
+
+    # --- DIAGNOSTIC STEP ---
+    # Prepend a simple comment instead of the import
+    import_statement = "/* Theme Import Placeholder */"
+    # --- END DIAGNOSTIC STEP ---
+
     with open(GLOBAL_CSS, "r") as f:
         content = f.read()
 
@@ -126,7 +135,8 @@ def main():
     with open(TAILWIND_CONFIG, "w") as f:
         f.write(tailwind_config)
 
-    update_global_css(THEME_CSS)
+    # Pass no argument as it's now hardcoded inside
+    update_global_css()
 
 
 if __name__ == "__main__":
