@@ -105,22 +105,13 @@ def update_global_css(theme_css_path):
         content = f.read()
 
     if import_statement not in content:
-        # Find the last @import statement and insert after it
-        last_import_match = re.search(r"@import [^;]+;", content)
-        if last_import_match:
-            insertion_point = last_import_match.end()
-            new_content = (
-                content[:insertion_point]
-                + "\\n"
-                + import_statement
-                + content[insertion_point:]
-            )
-        else:
-            # If no @import statements exist, add it to the top
-            new_content = import_statement + "\\n" + content
-
+        # Prepend the import statement to the beginning of the file
+        new_content = import_statement + "\\n" + content
         with open(GLOBAL_CSS, "w") as f:
             f.write(new_content)
+        print(f"Added import statement to {GLOBAL_CSS}")
+    else:
+        print(f"Import statement already exists in {GLOBAL_CSS}")
 
 
 def main():

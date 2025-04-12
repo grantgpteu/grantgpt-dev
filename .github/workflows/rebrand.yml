@@ -144,6 +144,13 @@ jobs:
 
           echo "Design and color adjustments step complete."
 
+      - name: Install Web Dependencies
+        working-directory: ./web
+        run: |
+          echo "Installing web dependencies..."
+          npm install
+          echo "Web dependencies installed."
+
       - name: Commit and Push Changes
         run: |
           git config --global user.name 'github-actions[bot]'
