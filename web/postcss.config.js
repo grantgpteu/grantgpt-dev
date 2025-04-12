@@ -1,7 +1,7 @@
 module.exports = {
-  plugins: [
-    require('postcss-import'), // Revert to array syntax to ensure order
-    require('tailwindcss'),
-    require('autoprefixer'),
-  ],
+  plugins: {
+    'postcss-import': {}, // Use string keys for plugins
+    'tailwindcss': {},
+    'autoprefixer': {},
+  },
 };
