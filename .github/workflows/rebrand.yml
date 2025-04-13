@@ -117,7 +117,7 @@ jobs:
         working-directory: ./web
 
       - name: Compile TypeScript
-        run: tsc --project scripts/tsconfig.json scripts/replace-icons.ts
+        run: tsc --project scripts/tsconfig.json
 
       - name: Replace Hardcoded SVG Icons
         run: |
