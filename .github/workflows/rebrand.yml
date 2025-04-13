@@ -116,6 +116,10 @@ jobs:
         run: npm install --save-dev @types/node
         working-directory: ./web
 
+      - name: Verify Type Definitions
+        run: npm ls @types/node
+        working-directory: ./web
+
       - name: Compile TypeScript
         run: tsc --project scripts/tsconfig.json
 
