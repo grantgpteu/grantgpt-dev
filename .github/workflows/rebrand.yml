@@ -112,6 +112,10 @@ jobs:
       - name: Install TypeScript
         run: npm install -g typescript
 
+      - name: Install Node.js Type Definitions
+        run: npm install --save-dev @types/node
+        working-directory: ./web
+
       - name: Compile TypeScript
         run: tsc scripts/replace-icons.ts
 
