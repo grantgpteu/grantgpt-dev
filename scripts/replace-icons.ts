@@ -50,24 +50,21 @@ try {
   // Matches the entire function definition more reliably
   const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \([\s\S]*?=> \{[\s\S]*?return \()([\s\S]*?)(\);\s*\};)/m;
   const logoTypeText = "GrantGPT";
-  // Simple span replacement, adjust styling as needed
-  const logoTypeReplacementJsx = `
+  // Return proper JSX for the component
+  const logoTypeReplacementJsx = `(
     <span
       style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
       className={className}
     >
-      ${logoTypeText}
+      GrantGPT
     </span>
-  `;
-  const escapedLogoTypeReplacementJsx = logoTypeReplacementJsx
-    .replace(/`/g, '\\`')
-    .replace(/\$/g, '\\$');
+  )`;
 
   if (iconsFileContent.match(onyxLogoTypeRegex)) {
     // Replace the entire return (...) block content
     iconsFileContent = iconsFileContent.replace(
       onyxLogoTypeRegex,
-      `$1${escapedLogoTypeReplacementJsx}$3`
+      `$1${logoTypeReplacementJsx}$3`
     );
     console.log("Replaced OnyxLogoTypeIcon with text span JSX.");
   } else {
