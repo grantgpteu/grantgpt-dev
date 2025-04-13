@@ -2938,12 +2938,14 @@ export const OnyxLogoTypeIcon = ({
   const height = size / aspectRatio; // Calculate the height based on the aspect ratio
 
   return (
-    <span
-      style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
-      className={className}
-    >
-      GrantGPT
-    </span>
+    (
+      <span
+        style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
+        className={className}
+      >
+        GrantGPT
+      </span>
+    )
   );
 };
 
