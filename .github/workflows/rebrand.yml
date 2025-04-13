@@ -16,25 +16,6 @@ jobs:
           fetch-depth: 0 # Fetch all history to properly push changes
           token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
 
-      - name: Check and Install Required Tools
-        run: |
-          echo "Checking for find and sed..."
-          if ! command -v sed &> /dev/null; then
-            echo "sed not found. Installing..."
-            sudo apt-get update && sudo apt-get install -y sed
-          else
-            echo "sed found."
-          fi
-          if ! command -v find &> /dev/null; then
-             echo "find not found. This is unexpected on ubuntu-latest."
-             exit 1
-          else
-             echo "find found."
-          fi
-          which find
-          which sed
-          echo "Tools check complete."
-
       - name: "Debug: List files targeted for rebranding"
         run: |
           echo "Files targeted for text replacement:"
@@ -114,11 +95,9 @@ jobs:
 
       - name: Install Node.js Type Definitions
         run: npm install --save-dev @types/node
-        working-directory: ./web
 
       - name: Verify Type Definitions
         run: npm ls @types/node
-        working-directory: ./web
 
       - name: Compile TypeScript
         run: tsc --project scripts/tsconfig.json
