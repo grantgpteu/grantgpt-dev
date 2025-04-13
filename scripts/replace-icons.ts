@@ -24,16 +24,17 @@ try {
   }
   // Get everything inside the <svg> tag, including paths, defs, etc.
   const grantGptInnerSvg = svgContentMatch[1].trim();
-  // Escape backticks, dollar signs, and potentially other special characters for insertion
+  // Escape special characters for safe string insertion
   const escapedGrantGptInnerSvg = grantGptInnerSvg
-    .replace(/`/g, '\\`')
-    .replace(/\$/g, '\\$'); // Add more escapes if needed
+    .replace(/[`$\\]/g, '\\$&')
+    .replace(/"/g, '\\"')
+    .trim();
 
   console.log("Successfully extracted GrantGPT SVG paths.");
 
   // 2. Replace OnyxIcon SVG content - More robust regex
   // Matches the entire function definition more reliably
-  const onyxIconRegex = /(export const OnyxIcon = \([\s\S]*?=> \{[\s\S]*?return \(\s*<svg[^>]*>)([\s\S]*?)(<\/svg>\s*?\);?\s*};)/m;
+  const onyxIconRegex = /(export const OnyxIcon = \([^)]*\) => \{\s*return \(\s*<svg[^>]*>)([^]*?)(<\/svg>\s*\);\s*\};)/m;
 
   if (iconsFileContent.match(onyxIconRegex)) {
     // Replace only the content between the <svg> tags
@@ -48,17 +49,10 @@ try {
 
   // 3. Replace OnyxLogoTypeIcon's returned JSX with a simple span
   // Matches the entire function definition more reliably
-  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \([\s\S]*?=> \{[\s\S]*?return \()([\s\S]*?)(\);\s*\};)/m;
+  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \([^)]*\) => \{\s*return \()([^]*?)(\);\s*\};)/m;
   const logoTypeText = "GrantGPT";
   // Return proper JSX for the component
-  const logoTypeReplacementJsx = `(
-    <span
-      style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
-      className={className}
-    >
-      GrantGPT
-    </span>
-  )`;
+  const logoTypeReplacementJsx = '<span style={{ fontSize: size ? Math.floor(size / 5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>';
 
   if (iconsFileContent.match(onyxLogoTypeRegex)) {
     // Replace the entire return (...) block content
