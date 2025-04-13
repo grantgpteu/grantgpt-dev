@@ -74,6 +74,8 @@ jobs:
           sed -i 's/{(settings && settings?.enterpriseSettings?.application_name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}/g' web/src/app/auth/login/LoginText.tsx
           # AssistantCard.tsx
           sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "GrantGPT"}/g' web/src/app/assistants/mine/AssistantCard.tsx
+          # FixedLogo.tsx "Powered by" text
+          sed -i 's/Powered by Onyx/Powered by GrantGPT/g' web/src/components/logo/FixedLogo.tsx
           echo "Specific text replacements applied."
 
       - name: Clean up backup files
@@ -107,6 +109,16 @@ jobs:
             echo "Replaced onyx.ico"
           else
             echo "Warning: GrantHive-logo/favicon.ico not found."
+          fi
+
+      - name: Replace Hardcoded SVG Icons
+        run: |
+          echo "Running script to replace hardcoded SVG icons..."
+          if [ -f scripts/replace-icons.js ]; then
+            node scripts/replace-icons.js
+            echo "Icon replacement script executed."
+          else
+            echo "Warning: scripts/replace-icons.js not found. Skipping hardcoded icon replacement."
           fi
 
       - name: Apply Design & Color Adjustments
