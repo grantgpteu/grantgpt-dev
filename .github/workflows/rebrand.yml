@@ -74,6 +74,7 @@ jobs:
           sed -i 's/{(settings && settings?.enterpriseSettings?.application_name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}/g' web/src/app/auth/login/LoginText.tsx
           # AssistantCard.tsx
           sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "GrantGPT"}/g' web/src/app/assistants/mine/AssistantCard.tsx
+          # FixedLogo.tsx "Powered by" text is now handled by scripts/replace-icons.js
           echo "Specific text replacements applied."
 
       - name: Clean up backup files
