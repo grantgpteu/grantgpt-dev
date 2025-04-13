@@ -74,7 +74,6 @@ jobs:
           sed -i 's/{(settings && settings?.enterpriseSettings?.application_name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}/g' web/src/app/auth/login/LoginText.tsx
           # AssistantCard.tsx
           sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "GrantGPT"}/g' web/src/app/assistants/mine/AssistantCard.tsx
-          # FixedLogo.tsx "Powered by" text is now handled by scripts/replace-icons.js
           echo "Specific text replacements applied."
 
       - name: Clean up backup files
@@ -109,6 +108,12 @@ jobs:
           else
             echo "Warning: GrantHive-logo/favicon.ico not found."
           fi
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Compile TypeScript
+        run: tsc scripts/replace-icons.ts
 
       - name: Replace Hardcoded SVG Icons
         run: |
@@ -154,8 +159,7 @@ jobs:
             sed -i 's/--neutral-800: #d4d4d4;/--neutral-800: #F8F9FA;/g' $TARGET_FILE # Mapped to GrantGPT Dark Text
             # Note: Replacing border with rgba requires careful escaping if using '/' delimiter. Using '|' instead.
             sed -i 's|--border: #5a5a5a;|--border: rgba(255, 255, 255, 0.1);|g' $TARGET_FILE # Mapped to GrantGPT Dark Border
-            sed -i 's/--agent: #e47011;/--agent: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
-            sed -i 's/--agent-sidebar: #be5d0e;/--agent-sidebar: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
+            sed -i 's/--agent: #e47011;/--agent-sidebar: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
 
             echo "Color adjustments applied to $TARGET_FILE."
           else
@@ -163,7 +167,7 @@ jobs:
           fi
 
           if [ -f "$EMAIL_PASSWORD_FORM" ]; then
-            echo "Applying styling changes to Login Button in $EMAIL_PASSWORD_FORM"
+            echo "Applying styling changes to Login Button in ./web/src/app/auth/login/EmailPasswordForm.tsx"
             # Remove variant="agent"
             sed -i 's/variant="agent"//g' "$EMAIL_PASSWORD_FORM"
             echo "Login button styling applied."
@@ -172,7 +176,7 @@ jobs:
           fi
 
           if [ -f "$BUTTON_COMPONENT" ]; then
-            echo "Updating default button variant in $BUTTON_COMPONENT"
+            echo "Updating default button variant in ./web/src/components/ui/button.tsx"
             # Update default button variant to use CSS variables
             sed -i 's/"bg-neutral-900 border-border text-neutral-50 hover:bg-neutral-900\/90 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"/"bg-primary text-primary-foreground hover:bg-primary\/90"/g' "$BUTTON_COMPONENT"
             echo "Default button variant updated."
@@ -190,7 +194,7 @@ jobs:
           # Check if there are any changes
           if git diff --quiet && git diff --staged --quiet; then
             echo "No changes to commit."
-            exit 0
+          exit 0
           fi
 
           git add .
@@ -198,6 +202,5 @@ jobs:
           # Push to the branch that triggered the workflow
           # Note: Since this only runs on workflow_dispatch, github.ref_name might not be what's expected.
           # Consider adding an input to specify the branch or pushing to a fixed branch like 'main'.
-          # For now, keeping it as is, assuming manual trigger implies intent to push to the selected branch.
           git push origin HEAD:${{ github.ref_name }}
           echo "Committed and pushed rebranding changes."
