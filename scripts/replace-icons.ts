@@ -1,5 +1,10 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+// For CommonJS compatibility
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const iconsFilePath = path.join(__dirname, '..', 'web', 'src', 'components', 'icons', 'icons.tsx');
 const grantGptSvgPath = path.join(__dirname, '..', 'web', 'public', 'logo.svg');
