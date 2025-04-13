@@ -57,6 +57,25 @@ jobs:
               {} +
           echo "Text replacement attempted (using safer patterns and -i.bak syntax)."
 
+      - name: Apply Specific Text Rebranding
+        run: |
+          echo "Applying specific text replacements..."
+          # ChatPopup.tsx
+          sed -i 's/Welcome to ${enterpriseSettings?.application_name || "Onyx"}!/Welcome to ${enterpriseSettings?.application_name || "GrantGPT"}!/g' web/src/app/chat/ChatPopup.tsx
+          # OnyxInitializingLoader.tsx
+          sed -i 's/Initializing {settings?.enterpriseSettings?.application_name ?? "Onyx"}/Initializing {settings?.enterpriseSettings?.application_name ?? "GrantGPT"}/g' web/src/components/OnyxInitializingLoader.tsx
+          # layout.tsx title
+          sed -i 's/title: enterpriseSettings?.application_name || "Onyx"/title: enterpriseSettings?.application_name || "GrantGPT"/g' web/src/app/layout.tsx
+          # layout.tsx description
+          sed -i 's/description: "Question answering for your documents"/description: "Matching you with the perfect Grants"/g' web/src/app/layout.tsx
+          # WhitelabelingForm.tsx
+          sed -i 's/values.application_name || "Onyx"/values.application_name || "GrantGPT"/g' web/src/app/ee/admin/whitelabeling/WhitelabelingForm.tsx
+          # LoginText.tsx
+          sed -i 's/{(settings && settings?.enterpriseSettings?.application_name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}/g' web/src/app/auth/login/LoginText.tsx
+          # AssistantCard.tsx
+          sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "GrantGPT"}/g' web/src/app/assistants/mine/AssistantCard.tsx
+          echo "Specific text replacements applied."
+
       - name: Clean up backup files
         run: |
           echo "Cleaning up .bak files created by sed..."
@@ -78,6 +97,7 @@ jobs:
           fi
           if [ -f GrantHive-logo/logo.png ]; then
             cp GrantHive-logo/logo.png web/public/logo.png
+            cp GrantHive-logo/logo.png web/public/logo-dark.png
             echo "Replaced onyx logo.png"
           else
             echo "Warning: GrantHive-logo/logo.png not found."
@@ -129,6 +149,83 @@ jobs:
             echo "Color adjustments applied to $TARGET_FILE."
           else
             echo "Warning: $TARGET_FILE not found. Skipping color adjustments."
+          fi
+
+          echo "Design and color adjustments step complete."
+
+      - name: Apply Login Button Styling and Correct Color Variables
+        run: |
+          TARGET_FILE="./web/src/app/globals.css"
+          EMAIL_PASSWORD_FORM="./web/src/app/auth/login/EmailPasswordForm.tsx"
+          BUTTON_COMPONENT="./web/src/components/ui/button.tsx"
+
+          if [ -f "$TARGET_FILE" ]; then
+            echo "Applying color changes to $TARGET_FILE"
+
+            # Light Mode (:root) Replacements - GrantGPT Color Palette
+            sed -i 's/--background: #fefcfa;/--background: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--foreground: #133075;/--foreground: #133075;/g' $TARGET_FILE
+            sed -i 's/--card: #FFFFFF;/--card: #FFFFFF;/g' $TARGET_FILE
+            sed -i 's/--card-foreground: #133075;/--card-foreground: #133075;/g' $TARGET_FILE
+            sed -i 's/--popover: #FFFFFF;/--popover: #FFFFFF;/g' $TARGET_FILE
+            sed -i 's/--popover-foreground: #133075;/--popover-foreground: #133075;/g' $TARGET_FILE
+            sed -i 's/--primary: #0A2463;/--primary: #0A2463;/g' $TARGET_FILE
+            sed -i 's/--primary-foreground: #F8F9FA;/--primary-foreground: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--secondary: #FFD166;/--secondary: #FFD166;/g' $TARGET_FILE
+            sed -i 's/--secondary-foreground: #133075;/--secondary-foreground: #133075;/g' $TARGET_FILE
+            sed -i 's/--muted: #E9ECEF;/--muted: #E9ECEF;/g' $TARGET_FILE
+            sed -i 's/--muted-foreground: #5D5B8D;/--muted-foreground: #5D5B8D;/g' $TARGET_FILE
+            sed -i 's/--accent: #7B68EE;/--accent: #7B68EE;/g' $TARGET_FILE
+            sed -i 's/--accent-foreground: #FFFFFF;/--accent-foreground: #FFFFFF;/g' $TARGET_FILE
+            sed -i 's/--destructive: #DC3545;/--destructive: #DC3545;/g' $TARGET_FILE
+            sed -i 's/--destructive-foreground: #FFFFFF;/--destructive-foreground: #FFFFFF;/g' $TARGET_FILE
+            sed -i 's/--border: #DEE2E6;/--border: #DEE2E6;/g' $TARGET_FILE
+            sed -i 's/--input: #CED4DA;/--input: #CED4DA;/g' $TARGET_FILE
+            sed -i 's/--ring: #0A2463;/--ring: #0A2463;/g' $TARGET_FILE
+            sed -i 's/--radius: 0.375rem;/--radius: 0.375rem;/g' $TARGET_FILE
+
+            # Dark Mode (.dark) Replacements - GrantGPT Dark Theme
+            sed -i 's/--background: #121212;/--background: #121212;/g' $TARGET_FILE
+            sed -i 's/--foreground: #F8F9FA;/--foreground: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--card: #1E1E1E;/--card: #1E1E1E;/g' $TARGET_FILE
+            sed -i 's/--card-foreground: #F8F9FA;/--card-foreground: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--popover: #1E1E1E;/--popover: #1E1E1E;/g' $TARGET_FILE
+            sed -i 's/--popover-foreground: #F8F9FA;/--popover-foreground: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--primary: #3D56A6;/--primary: #3D56A6;/g' $TARGET_FILE
+            sed -i 's/--primary-foreground: #F8F9FA;/--primary-foreground: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--secondary: #FFD166;/--secondary: #FFD166;/g' $TARGET_FILE
+            sed -i 's/--secondary-foreground: #133075;/--secondary-foreground: #133075;/g' $TARGET_FILE
+            sed -i 's/--muted: #343A40;/--muted: #343A40;/g' $TARGET_FILE
+            sed -i 's/--muted-foreground: #ADB5BD;/--muted-foreground: #ADB5BD;/g' $TARGET_FILE
+            sed -i 's/--accent: #7B68EE;/--accent: #7B68EE;/g' $TARGET_FILE
+            sed -i 's/--accent-foreground: #FFFFFF;/--accent-foreground: #FFFFFF;/g' $TARGET_FILE
+            sed -i 's/--destructive: #E57373;/--destructive: #E57373;/g' $TARGET_FILE
+            sed -i 's/--destructive-foreground: #121212;/--destructive-foreground: #121212;/g' $TARGET_FILE
+            sed -i 's/--border: rgba(255, 255, 255, 0.1);/--border: rgba(255, 255, 255, 0.1);/g' $TARGET_FILE
+            sed -i 's/--input: rgba(255, 255, 255, 0.1);/--input: rgba(255, 255, 255, 0.1);/g' $TARGET_FILE
+            sed -i 's/--ring: #3D56A6;/--ring: #3D56A6;/g' $TARGET_FILE
+
+            echo "Color adjustments applied to $TARGET_FILE."
+          else
+            echo "Warning: $TARGET_FILE not found. Skipping color adjustments."
+          fi
+
+          if [ -f "$EMAIL_PASSWORD_FORM" ]; then
+            echo "Applying styling changes to Login Button in $EMAIL_PASSWORD_FORM"
+            # Remove variant="agent"
+            sed -i 's/variant="agent"//g' "$EMAIL_PASSWORD_FORM"
+            echo "Login button styling applied."
+          else
+            echo "Warning: $EMAIL_PASSWORD_FORM not found. Skipping login button styling."
+          fi
+
+          if [ -f "$BUTTON_COMPONENT" ]; then
+            echo "Updating default button variant in $BUTTON_COMPONENT"
+            # Update default button variant to use CSS variables
+            sed -i 's/"bg-neutral-900 border-border text-neutral-50 hover:bg-neutral-900\/90 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"/"bg-primary text-primary-foreground hover:bg-primary\/90"/g' "$BUTTON_COMPONENT"
+            echo "Default button variant updated."
+          else
+            echo "Warning: $BUTTON_COMPONENT not found. Skipping button variant update."
           fi
 
           echo "Design and color adjustments step complete."

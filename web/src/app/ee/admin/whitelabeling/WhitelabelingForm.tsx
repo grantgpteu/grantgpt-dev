@@ -237,7 +237,7 @@ export function WhitelabelingForm() {
                     values.enable_consent_screen
                       ? `The title for the consent screen that will be displayed for each user on their initial visit to the application. If left blank, title will default to "Terms of Use".`
                       : `The title for the popup that will be displayed for each user on their initial visit to the application. If left blank AND Custom Popup Content is specified, will use "Welcome to ${
-                          values.application_name || "Onyx"
+                          values.application_name || "GrantGPT"
                         }!".`
                   }
                   placeholder={
