@@ -74,8 +74,6 @@ jobs:
           sed -i 's/{(settings && settings?.enterpriseSettings?.application_name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}/g' web/src/app/auth/login/LoginText.tsx
           # AssistantCard.tsx
           sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "GrantGPT"}/g' web/src/app/assistants/mine/AssistantCard.tsx
-          # FixedLogo.tsx "Powered by" text
-          sed -i 's/Powered by Onyx/Powered by GrantGPT/g' web/src/components/logo/FixedLogo.tsx
           echo "Specific text replacements applied."
 
       - name: Clean up backup files
@@ -157,65 +155,6 @@ jobs:
             sed -i 's|--border: #5a5a5a;|--border: rgba(255, 255, 255, 0.1);|g' $TARGET_FILE # Mapped to GrantGPT Dark Border
             sed -i 's/--agent: #e47011;/--agent: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
             sed -i 's/--agent-sidebar: #be5d0e;/--agent-sidebar: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
-
-            echo "Color adjustments applied to $TARGET_FILE."
-          else
-            echo "Warning: $TARGET_FILE not found. Skipping color adjustments."
-          fi
-
-          echo "Design and color adjustments step complete."
-
-      - name: Apply Login Button Styling and Correct Color Variables
-        run: |
-          TARGET_FILE="./web/src/app/globals.css"
-          EMAIL_PASSWORD_FORM="./web/src/app/auth/login/EmailPasswordForm.tsx"
-          BUTTON_COMPONENT="./web/src/components/ui/button.tsx"
-
-          if [ -f "$TARGET_FILE" ]; then
-            echo "Applying color changes to $TARGET_FILE"
-
-            # Light Mode (:root) Replacements - GrantGPT Color Palette
-            sed -i 's/--background: #fefcfa;/--background: #F8F9FA;/g' $TARGET_FILE
-            sed -i 's/--foreground: #133075;/--foreground: #133075;/g' $TARGET_FILE
-            sed -i 's/--card: #FFFFFF;/--card: #FFFFFF;/g' $TARGET_FILE
-            sed -i 's/--card-foreground: #133075;/--card-foreground: #133075;/g' $TARGET_FILE
-            sed -i 's/--popover: #FFFFFF;/--popover: #FFFFFF;/g' $TARGET_FILE
-            sed -i 's/--popover-foreground: #133075;/--popover-foreground: #133075;/g' $TARGET_FILE
-            sed -i 's/--primary: #0A2463;/--primary: #0A2463;/g' $TARGET_FILE
-            sed -i 's/--primary-foreground: #F8F9FA;/--primary-foreground: #F8F9FA;/g' $TARGET_FILE
-            sed -i 's/--secondary: #FFD166;/--secondary: #FFD166;/g' $TARGET_FILE
-            sed -i 's/--secondary-foreground: #133075;/--secondary-foreground: #133075;/g' $TARGET_FILE
-            sed -i 's/--muted: #E9ECEF;/--muted: #E9ECEF;/g' $TARGET_FILE
-            sed -i 's/--muted-foreground: #5D5B8D;/--muted-foreground: #5D5B8D;/g' $TARGET_FILE
-            sed -i 's/--accent: #7B68EE;/--accent: #7B68EE;/g' $TARGET_FILE
-            sed -i 's/--accent-foreground: #FFFFFF;/--accent-foreground: #FFFFFF;/g' $TARGET_FILE
-            sed -i 's/--destructive: #DC3545;/--destructive: #DC3545;/g' $TARGET_FILE
-            sed -i 's/--destructive-foreground: #FFFFFF;/--destructive-foreground: #FFFFFF;/g' $TARGET_FILE
-            sed -i 's/--border: #DEE2E6;/--border: #DEE2E6;/g' $TARGET_FILE
-            sed -i 's/--input: #CED4DA;/--input: #CED4DA;/g' $TARGET_FILE
-            sed -i 's/--ring: #0A2463;/--ring: #0A2463;/g' $TARGET_FILE
-            sed -i 's/--radius: 0.375rem;/--radius: 0.375rem;/g' $TARGET_FILE
-
-            # Dark Mode (.dark) Replacements - GrantGPT Dark Theme
-            sed -i 's/--background: #121212;/--background: #121212;/g' $TARGET_FILE
-            sed -i 's/--foreground: #F8F9FA;/--foreground: #F8F9FA;/g' $TARGET_FILE
-            sed -i 's/--card: #1E1E1E;/--card: #1E1E1E;/g' $TARGET_FILE
-            sed -i 's/--card-foreground: #F8F9FA;/--card-foreground: #F8F9FA;/g' $TARGET_FILE
-            sed -i 's/--popover: #1E1E1E;/--popover: #1E1E1E;/g' $TARGET_FILE
-            sed -i 's/--popover-foreground: #F8F9FA;/--popover-foreground: #F8F9FA;/g' $TARGET_FILE
-            sed -i 's/--primary: #3D56A6;/--primary: #3D56A6;/g' $TARGET_FILE
-            sed -i 's/--primary-foreground: #F8F9FA;/--primary-foreground: #F8F9FA;/g' $TARGET_FILE
-            sed -i 's/--secondary: #FFD166;/--secondary: #FFD166;/g' $TARGET_FILE
-            sed -i 's/--secondary-foreground: #133075;/--secondary-foreground: #133075;/g' $TARGET_FILE
-            sed -i 's/--muted: #343A40;/--muted: #343A40;/g' $TARGET_FILE
-            sed -i 's/--muted-foreground: #ADB5BD;/--muted-foreground: #ADB5BD;/g' $TARGET_FILE
-            sed -i 's/--accent: #7B68EE;/--accent: #7B68EE;/g' $TARGET_FILE
-            sed -i 's/--accent-foreground: #FFFFFF;/--accent-foreground: #FFFFFF;/g' $TARGET_FILE
-            sed -i 's/--destructive: #E57373;/--destructive: #E57373;/g' $TARGET_FILE
-            sed -i 's/--destructive-foreground: #121212;/--destructive-foreground: #121212;/g' $TARGET_FILE
-            sed -i 's/--border: rgba(255, 255, 255, 0.1);/--border: rgba(255, 255, 255, 0.1);/g' $TARGET_FILE
-            sed -i 's/--input: rgba(255, 255, 255, 0.1);/--input: rgba(255, 255, 255, 0.1);/g' $TARGET_FILE
-            sed -i 's/--ring: #3D56A6;/--ring: #3D56A6;/g' $TARGET_FILE
 
             echo "Color adjustments applied to $TARGET_FILE."
           else
