@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const iconsFilePath = path.join(__dirname, '..', 'web', 'src', 'components', 'icons', 'icons.tsx');
 const grantGptSvgPath = path.join(__dirname, '..', 'web', 'public', 'logo.svg');
@@ -14,61 +14,59 @@ try {
   const grantGptSvgContent = fs.readFileSync(grantGptSvgPath, 'utf8');
   let fixedLogoContent = fs.readFileSync(fixedLogoPath, 'utf8');
 
-  // --- 1. Replace OnyxIcon ---
+  // 1. Extract the core path data from the GrantGPT SVG
   const svgContentMatch = grantGptSvgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
   if (!svgContentMatch || !svgContentMatch[1]) {
     throw new Error('Could not extract content from GrantGPT SVG file.');
   }
+  // Get everything inside the <svg> tag, including paths, defs, etc.
   const grantGptInnerSvg = svgContentMatch[1].trim();
-  const escapedGrantGptInnerSvg = grantGptInnerSvg.replace(/`/g, '\\`').replace(/\$/g, '\\$');
-  console.log("Successfully extracted GrantGPT SVG inner content.");
+  // Escape backticks, dollar signs, and potentially other special characters for insertion
+  const escapedGrantGptInnerSvg = grantGptInnerSvg
+    .replace(/`/g, '\\`')
+    .replace(/\$/g, '\\$'); // Add more escapes if needed
 
+  console.log("Successfully extracted GrantGPT SVG paths.");
+
+  // 2. Replace OnyxIcon SVG content - More robust regex
+  // Matches the entire function definition more reliably
   const onyxIconRegex = /(export const OnyxIcon = \([\s\S]*?=> \{[\s\S]*?return \(\s*<svg[^>]*>)([\s\S]*?)(<\/svg>\s*?\);?\s*};)/m;
+
   if (iconsFileContent.match(onyxIconRegex)) {
-    // Check if it hasn't already been replaced (simple check for GrantGPT path data)
-    if (!iconsFileContent.match(/fill="#ffd166"/)) { // Check for a color unique to GrantGPT logo
-       iconsFileContent = iconsFileContent.replace(
-         onyxIconRegex,
-         `$1\n        ${escapedGrantGptInnerSvg}\n      $3`
-       );
-       console.log("Replaced OnyxIcon SVG content.");
-    } else {
-       console.log("OnyxIcon already contains GrantGPT content. Skipping replacement.");
-    }
+    // Replace only the content between the <svg> tags
+    iconsFileContent = iconsFileContent.replace(
+      onyxIconRegex,
+      `$1\n        ${escapedGrantGptInnerSvg}\n      $3`
+    );
+    console.log("Replaced OnyxIcon SVG content.");
   } else {
     console.warn("OnyxIcon definition not found or pattern mismatch. Skipping OnyxIcon replacement.");
   }
 
-  // --- 2. Replace OnyxLogoTypeIcon ---
+  // 3. Replace OnyxLogoTypeIcon's returned JSX with a simple span
   // Matches the entire function definition more reliably
   const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \([\s\S]*?=> \{[\s\S]*?return \()([\s\S]*?)(\);\s*\};)/m;
   const logoTypeText = "GrantGPT";
-  // Define the *complete* valid JSX return statement
+  // Simple span replacement, adjust styling as needed
   const logoTypeReplacementJsx = `
-    (
-      <span
-        style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
-        className={className}
-      >
-        ${logoTypeText}
-      </span>
-    )
+    <span
+      style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
+      className={className}
+    >
+      ${logoTypeText}
+    </span>
   `;
   const escapedLogoTypeReplacementJsx = logoTypeReplacementJsx
     .replace(/`/g, '\\`')
     .replace(/\$/g, '\\$');
 
   if (iconsFileContent.match(onyxLogoTypeRegex)) {
-     // Check if it hasn't already been replaced
-     if (!iconsFileContent.includes(`>${logoTypeText}<`)) {
-        iconsFileContent = iconsFileContent.replace(
-          onyxLogoTypeRegex,
-          `$1${escapedLogoTypeReplacementJsx}$3` // Replace group 2 (the original return content)
-        );
-        console.log("Replaced OnyxLogoTypeIcon with text span JSX.");
-     } else {
-        console.log("OnyxLogoTypeIcon already replaced with text span. Skipping replacement.");
-     }
+    // Replace the entire return (...) block content
+    iconsFileContent = iconsFileContent.replace(
+      onyxLogoTypeRegex,
+      `$1${escapedLogoTypeReplacementJsx}$3`
+    );
+    console.log("Replaced OnyxLogoTypeIcon with text span JSX.");
   } else {
     console.warn("OnyxLogoTypeIcon definition not found or pattern mismatch. Skipping OnyxLogoTypeIcon replacement.");
   }
@@ -77,7 +75,7 @@ try {
   fs.writeFileSync(iconsFilePath, iconsFileContent, 'utf8');
   console.log(`Successfully updated ${iconsFilePath}`);
 
-  // --- 3. Replace "Powered by Onyx" in FixedLogo.tsx ---
+  // 4. Replace "Powered by Onyx" in FixedLogo.tsx
   const poweredByRegex = />\s*Powered by Onyx\s*</g; // Target the text node more specifically
   if (fixedLogoContent.match(poweredByRegex)) {
     fixedLogoContent = fixedLogoContent.replace(poweredByRegex, '>Powered by GrantGPT<');
