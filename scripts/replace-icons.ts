@@ -81,10 +81,14 @@ async function main() {
         if (arrowFunction) {
             const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
             if (returnStatement) {
-                 // Directly set the expression of the return statement
-                 // ts-morph handles parsing the string into the correct AST node
-                 returnStatement.setExpression(logoTypeReplacementJsx);
-                 console.log("Replaced OnyxLogoTypeIcon return expression using AST.");
+                 const returnedExpression = returnStatement.getExpression(); // Get the node being returned
+                 if (returnedExpression) {
+                     // Replace the entire node that was being returned with the new JSX text
+                     returnedExpression.replaceWithText(logoTypeReplacementJsx); 
+                     console.log("Replaced OnyxLogoTypeIcon return expression using AST.");
+                 } else {
+                     console.warn("Could not get expression from return statement in OnyxLogoTypeIcon.");
+                 }
             } else {
                  console.warn("Could not find return statement in OnyxLogoTypeIcon.");
             }
