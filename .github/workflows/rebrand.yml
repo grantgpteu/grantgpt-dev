@@ -9,6 +9,9 @@ permissions:
 jobs:
   rebrand:
     runs-on: ubuntu-latest
+    env:
+      BRAND_NAME: "GrantGPT"
+      LOGO_PATH: "GrantHive-logo"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,8 +44,8 @@ jobs:
             \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
             -type f \
             -exec sed -i.bak -E \
-              -e 's/"\\bOnyx\\b"/"GrantGPT"/g' \
-              -e 's/>\\bOnyx\\b</>GrantGPT</g' \
+              -e 's/"\\bOnyx\\b"/"${BRAND_NAME}"/g' \
+              -e 's/>\\bOnyx\\b</>"${BRAND_NAME}"</g' \
               {} +
           echo "Text replacement attempted (using safer patterns and -i.bak syntax)."
 
@@ -50,19 +53,19 @@ jobs:
         run: |
           echo "Applying specific text replacements..."
           # ChatPopup.tsx
-          sed -i 's/Welcome to ${enterpriseSettings?.application_name || "Onyx"}!/Welcome to ${enterpriseSettings?.application_name || "GrantGPT"}!/g' web/src/app/chat/ChatPopup.tsx
+          sed -i 's/Welcome to ${enterpriseSettings?.name || "Onyx"}!/Welcome to ${enterpriseSettings?.name || "${BRAND_NAME}"}!/g' web/src/app/chat/ChatPopup.tsx
           # OnyxInitializingLoader.tsx
-          sed -i 's/Initializing {settings?.enterpriseSettings?.application_name ?? "Onyx"}/Initializing {settings?.enterpriseSettings?.application_name ?? "GrantGPT"}/g' web/src/components/OnyxInitializingLoader.tsx
+          sed -i 's/Initializing {settings?.enterpriseSettings?.name ?? "Onyx"}/Initializing {settings?.enterpriseSettings?.name ?? "${BRAND_NAME}"}/g' web/src/components/OnyxInitializingLoader.tsx
           # layout.tsx title
-          sed -i 's/title: enterpriseSettings?.application_name || "Onyx"/title: enterpriseSettings?.application_name || "GrantGPT"/g' web/src/app/layout.tsx
+          sed -i 's/title: enterpriseSettings?.name || "Onyx"/title: enterpriseSettings?.name || "${BRAND_NAME}"/g' web/src/app/layout.tsx
           # layout.tsx description
           sed -i 's/description: "Question answering for your documents"/description: "Matching you with the perfect Grants"/g' web/src/app/layout.tsx
           # WhitelabelingForm.tsx
-          sed -i 's/values.application_name || "Onyx"/values.application_name || "GrantGPT"/g' web/src/app/ee/admin/whitelabeling/WhitelabelingForm.tsx
+          sed -i 's/values.application_name || "Onyx"/values.application_name || "${BRAND_NAME}"/g' web/src/app/ee/admin/whitelabeling/WhitelabelingForm.tsx
           # LoginText.tsx
-          sed -i 's/{(settings && settings?.enterpriseSettings?.application_name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}/g' web/src/app/auth/login/LoginText.tsx
+          sed -i 's/{(settings && settings?.enterpriseSettings?.name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.name) || "${BRAND_NAME}"}/g' web/src/app/auth/login/LoginText.tsx
           # AssistantCard.tsx
-          sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "GrantGPT"}/g' web/src/app/assistants/mine/AssistantCard.tsx
+          sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "${BRAND_NAME}"}/g' web/src/app/assistants/mine/AssistantCard.tsx
           echo "Specific text replacements applied."
 
       - name: Clean up backup files
@@ -78,24 +81,24 @@ jobs:
           # Copy GrantGPT logos over Onyx logos
           # Assumes GrantHive-logo directory is present at the root of the repo
           # If GrantHive-logo is not in the repo, this step needs adjustment (e.g., checkout another repo, download)
-          if [ -f GrantHive-logo/logo.svg ]; then
-            cp GrantHive-logo/logo.svg web/public/logo.svg
+          if [ -f "${LOGO_PATH}/logo.svg" ]; then
+            cp "${LOGO_PATH}/logo.svg" web/public/logo.svg
             echo "Replaced onyx-logo.svg"
           else
-            echo "Warning: GrantHive-logo/logo.svg not found."
+            echo "Warning: ${LOGO_PATH}/logo.svg not found."
           fi
-          if [ -f GrantHive-logo/logo.png ]; then
-            cp GrantHive-logo/logo.png web/public/logo.png
-            cp GrantHive-logo/logo.png web/public/logo-dark.png
+          if [ -f "${LOGO_PATH}/logo.png" ]; then
+            cp "${LOGO_PATH}/logo.png" web/public/logo.png
+            cp "${LOGO_PATH}/logo.png" web/public/logo-dark.png
             echo "Replaced onyx logo.png"
           else
-            echo "Warning: GrantHive-logo/logo.png not found."
+            echo "Warning: ${LOGO_PATH}/logo.png not found."
           fi
-          if [ -f GrantHive-logo/favicon.ico ]; then
-            cp GrantHive-logo/favicon.ico web/public/onyx.ico
+          if [ -f "${LOGO_PATH}/favicon.ico" ]; then
+            cp "${LOGO_PATH}/favicon.ico" web/public/onyx.ico
             echo "Replaced onyx.ico"
           else
-            echo "Warning: GrantHive-logo/favicon.ico not found."
+            echo "Warning: ${LOGO_PATH}/favicon.ico not found."
           fi
 
       # Removed separate install steps for typescript/@types/node as npm ci should handle them if they are in package.json
