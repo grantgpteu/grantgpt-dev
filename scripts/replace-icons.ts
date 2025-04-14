@@ -81,17 +81,34 @@ async function main() {
         if (arrowFunction) {
             const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
             if (returnStatement) {
-                 // Navigate: return -> (...) -> (...) -> <span>
-                 const spanElement = returnStatement.getExpressionIfKind(SyntaxKind.ParenthesizedExpression)
-                                        ?.getExpressionIfKind(SyntaxKind.ParenthesizedExpression) // Get the inner parentheses
-                                        ?.getExpressionIfKind(SyntaxKind.JsxElement); // Get the <span> element
+                 const returnedExpr = returnStatement.getExpression(); // Get the node being returned
+                 if (returnedExpr) {
+                     // --- Debugging AST Structure ---
+                     console.log(`--- Debug OnyxLogoTypeIcon Return AST ---`);
+                     console.log(`Return Expression Kind: ${returnedExpr.getKindName()}`);
+                     console.log(`Return Expression Text:\n${returnedExpr.getText()}`);
+                     returnedExpr.forEachChild(child => {
+                         console.log(`  Child Kind: ${child.getKindName()}, Child Text: ${child.getText().substring(0, 100)}...`);
+                         // You might need to log grandchildren too if the structure is complex
+                         // child.forEachChild(grandChild => console.log(...)); 
+                     });
+                     console.log(`--- End Debug ---`);
+                     // --- End Debugging ---
 
-                 if (spanElement) {
-                     // Replace just the <span> node itself
-                     spanElement.replaceWithText(logoTypeReplacementJsx); 
-                     console.log("Replaced OnyxLogoTypeIcon's span element using AST.");
+                     // Attempt to find the span using the previously assumed structure
+                     const spanElement = returnedExpr.asKind(SyntaxKind.ParenthesizedExpression) // Use asKind for type safety
+                                            ?.getExpressionIfKind(SyntaxKind.ParenthesizedExpression) // Get the inner parentheses
+                                            ?.getExpressionIfKind(SyntaxKind.JsxElement); // Get the <span> element
+
+                     if (spanElement) {
+                         // Replace just the <span> node itself
+                         spanElement.replaceWithText(logoTypeReplacementJsx); 
+                         console.log("Replaced OnyxLogoTypeIcon's span element using AST.");
+                     } else {
+                         console.warn("Could not find the nested span JsxElement using expected structure. Check debug logs.");
+                     }
                  } else {
-                     console.warn("Could not find the nested span JsxElement within OnyxLogoTypeIcon return statement.");
+                     console.warn("Could not get expression from return statement in OnyxLogoTypeIcon.");
                  }
             } else {
                  console.warn("Could not find return statement in OnyxLogoTypeIcon.");
