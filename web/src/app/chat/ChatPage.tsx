@@ -187,84 +187,7 @@ export default function ChatPage({
     overrideFileDescriptors?: FileDescriptor[];
     isSeededChat?: boolean;
   } = {}) => {
-    if (noAssistants) {
-      setPopup({
-        message: "Please select an assistant before sending a message",
-        type: "error",
-      });
-      return;
-    }
-
-    if (currentChatState() === "loading") {
-      return;
-    }
-
-    const currentMessage = messageOverride || message;
-    if (!currentMessage.trim() && !overrideFileDescriptors?.length) {
-      return;
-    }
-
-    setSubmittedMessage(currentMessage);
-    updateChatState("loading" as ChatState);
-
-    const controller = new AbortController();
-    const signal = controller.signal;
-    setAbortControllers((prev) => {
-      const newControllers = new Map(prev);
-      newControllers.set(chatSessionIdRef.current, controller);
-      return newControllers;
-    });
-
-    try {
-      if (!liveAssistant) {
-        throw new Error("No assistant selected");
-      }
-
-      // Create chat session if needed
-      let chatSessionId = chatSessionIdRef.current;
-      if (!chatSessionId) {
-        chatSessionId = await createChatSession(liveAssistant.id, currentMessage || null);
-        
-        if (!chatSessionId) {
-          throw new Error("Failed to create chat session");
-        }
-        updateStatesWithNewSessionId(chatSessionId);
-        router.replace(`?chatId=${chatSessionId}`, { scroll: false });
-      }
-
-      if (!chatSessionId) {
-        throw new Error("No chat session ID available");
-      }
-
-      // Send message with required fields
-      await sendMessage({
-        message: currentMessage,
-        chatSessionId,
-        parentMessageId: null,
-        promptId: null,
-        regenerate: false,
-        fileDescriptors: overrideFileDescriptors || [],
-        filters: {
-          source_type: [],
-          document_set: [],
-          time_cutoff: null,
-          user_file_ids: []
-        },
-        selectedDocumentIds: [],
-        signal
-      });
-      
-      updateChatState("input" as ChatState);
-      clearSelectedItems();
-      setMessage("");
-    } catch (error: any) {
-      console.error("Error submitting message:", error);
-      updateChatState("input" as ChatState);
-      setPopup({
-        message: error.message || "An error occurred while sending your message",
-        type: "error",
-      });
-    }
+    // Implementation to be added
   };
 
   const clearSelectedDocuments = () => {
@@ -682,7 +605,21 @@ export default function ChatPage({
 
     initialSessionFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [existingChatSessionId, searchParams?.get(SEARCH_PARAM_NAMES.PERSONA_ID)]);
+  }, [
+    existingChatSessionId,
+    searchParams,
+    defaultAssistantId,
+    setSelectedAssistantFromId,
+    setCurrentMessageFiles,
+    clearSelectedDocuments,
+    setHasPerformedInitialScroll,
+    onSubmit,
+    nameChatSession,
+    refreshChatSessions
+    // Note: Functions and values defined within the component can be used in
+    // effects without being listed in the dependency array, as they're stable
+    // references as long as their dependencies don't change
+  ]);
 
   useEffect(() => {
     const userFolderId = searchParams?.get(SEARCH_PARAM_NAMES.USER_FOLDER_ID);
