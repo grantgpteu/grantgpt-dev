@@ -1,20 +1,42 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url'; // <--- Import this
 
-// CommonJS compatible directory resolution
-const __dirname = path.resolve();
+// ES Module compatible directory resolution
+const __filename = fileURLToPath(import.meta.url); // Get script's own path
+const __dirname = path.dirname(__filename);      // Get script's directory (scripts/dist)
 
-const iconsFilePath = path.join(__dirname, '..', 'web', 'src', 'components', 'icons', 'icons.tsx');
-const grantGptSvgPath = path.join(__dirname, '..', 'web', 'public', 'logo.svg');
-const fixedLogoPath = path.join(__dirname, '..', 'web', 'src', 'components', 'logo', 'FixedLogo.tsx');
+// Calculate paths relative to the script's directory
+const projectRoot = path.resolve(__dirname, '..', '..'); // Go up two levels (from scripts/dist to repo root)
 
-console.log(`Reading icons file: ${iconsFilePath}`);
-console.log(`Reading GrantGPT SVG file: ${grantGptSvgPath}`);
-console.log(`Reading FixedLogo file: ${fixedLogoPath}`);
+const iconsFilePath = path.join(projectRoot, 'web', 'src', 'components', 'icons', 'icons.tsx');
+const grantGptSvgPath = path.join(projectRoot, 'web', 'public', 'logo.svg');
+const fixedLogoPath = path.join(projectRoot, 'web', 'src', 'components', 'logo', 'FixedLogo.tsx');
+
+// Add some debugging logs
+console.log(`Script directory (__dirname): ${__dirname}`);
+console.log(`Calculated project root: ${projectRoot}`);
+console.log(`Attempting to read icons file: ${iconsFilePath}`);
+console.log(`Attempting to read GrantGPT SVG file: ${grantGptSvgPath}`);
+console.log(`Attempting to read FixedLogo file: ${fixedLogoPath}`);
 
 try {
+  // Check if file exists before reading (optional but good practice)
+  if (!fs.existsSync(iconsFilePath)) {
+    throw new Error(`ENOENT: icons.tsx not found at calculated path: ${iconsFilePath}`);
+  }
   let iconsFileContent = fs.readFileSync(iconsFilePath, 'utf8');
+  
+  // Check if SVG file exists
+  if (!fs.existsSync(grantGptSvgPath)) {
+    throw new Error(`ENOENT: GrantGPT SVG not found at calculated path: ${grantGptSvgPath}`);
+  }
   const grantGptSvgContent = fs.readFileSync(grantGptSvgPath, 'utf8');
+
+  // Check if FixedLogo file exists
+  if (!fs.existsSync(fixedLogoPath)) {
+    throw new Error(`ENOENT: FixedLogo.tsx not found at calculated path: ${fixedLogoPath}`);
+  }
   let fixedLogoContent = fs.readFileSync(fixedLogoPath, 'utf8');
 
   // 1. Extract the core path data from the GrantGPT SVG
@@ -81,5 +103,5 @@ try {
 
 } catch (error) {
   console.error("Error during icon/text replacement:", error);
-  process.exit(1);
+  process.exit(1); // Ensure script exits on error
 }
