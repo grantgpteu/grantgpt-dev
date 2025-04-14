@@ -102,7 +102,8 @@ jobs:
       - name: Compile TypeScript
         run: |
           cd scripts
-          tsc --noEmit --skipLibCheck
+          # Compile TypeScript to JavaScript
+          tsc --project tsconfig.json
 
       - name: Replace Hardcoded SVG Icons
         run: |
@@ -111,7 +112,16 @@ jobs:
             node scripts/replace-icons.js
             echo "Icon replacement script executed."
           else
-            echo "Warning: scripts/replace-icons.js not found. Skipping hardcoded icon replacement."
+            echo "Error: scripts/replace-icons.js not found after compilation."
+            exit 1  # Fail the workflow if the script doesn't exist
+          fi
+          
+          # Verify icons.tsx was modified by checking git status
+          if ! git diff --quiet web/src/components/icons/icons.tsx; then
+            echo "Verified: web/src/components/icons/icons.tsx was modified by the script."
+          else
+            echo "Error: web/src/components/icons/icons.tsx was NOT modified by the script. Exiting."
+            exit 1 # Fail if the target file wasn't changed
           fi
 
       - name: Apply Design & Color Adjustments
