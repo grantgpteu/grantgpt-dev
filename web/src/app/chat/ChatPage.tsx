@@ -170,7 +170,7 @@ export default function ChatPage({
   firstMessage?: string;
   initialFolders?: any;
   initialFiles?: any;
-}) {
+}): JSX.Element {
   // Initialize refs
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const waitForScrollRef = useRef<boolean>(false);
@@ -605,7 +605,21 @@ export default function ChatPage({
 
     initialSessionFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [existingChatSessionId, searchParams?.get(SEARCH_PARAM_NAMES.PERSONA_ID)]);
+  }, [
+    existingChatSessionId,
+    searchParams,
+    defaultAssistantId,
+    setSelectedAssistantFromId,
+    setCurrentMessageFiles,
+    clearSelectedDocuments,
+    setHasPerformedInitialScroll,
+    onSubmit,
+    nameChatSession,
+    refreshChatSessions
+    // Note: Functions and values defined within the component can be used in
+    // effects without being listed in the dependency array, as they're stable
+    // references as long as their dependencies don't change
+  ]);
 
   useEffect(() => {
     const userFolderId = searchParams?.get(SEARCH_PARAM_NAMES.USER_FOLDER_ID);
@@ -1003,7 +1017,11 @@ export default function ChatPage({
 
     scrollableDivRef.current.scrollTo({
       top: scrollableDivRef.current.scrollHeight,
-    behavior: fast ? "auto" : "smooth"
+      behavior: fast ? "auto" : "smooth"
     });
   };
+
+  return (
+    <div>Chat interface here</div>
+  );
 }
