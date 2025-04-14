@@ -2937,25 +2937,7 @@ export const OnyxLogoTypeIcon = ({
   const aspectRatio = 2640 / 733; // Calculate the aspect ratio of the original SVG
   const height = size / aspectRatio; // Calculate the height based on the aspect ratio
 
-  return (
-    (
-      <span
-        style={{ fontSize: size ? \`\${size / 5}px\` : '1rem', fontWeight: 'bold' }}
-        className={className}
-      >
-        GrantGPT
-      </span>
-    )
-  );
-};
-
-export const OnyxIcon = ({
-  size = 16,
-  className = defaultTailwindCSS,
-}: IconProps) => {
-  return (
-    <svg
-      style={{ width: `${size}px`, height: `${size}px` }}
+  return <span style={{ fontSize: size ? Math.floor(size/5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>${size}px` }}
       className={`w-[${size}px] h-[${size}px] ` + className}
       viewBox="0 0 56 56"
       fill="none"
