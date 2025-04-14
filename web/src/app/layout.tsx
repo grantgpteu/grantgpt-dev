@@ -4,6 +4,8 @@ import {
   fetchEnterpriseSettingsSS,
   fetchSettingsSS,
 } from "@/components/settings/lib";
+import { OnyxInitializingLoader } from "@/components/OnyxInitializingLoader";
+import FixedLogo from "@/components/logo/FixedLogo";
 import {
   CUSTOM_ANALYTICS_ENABLED,
   GTM_ENABLED,
@@ -45,39 +47,29 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  let logoLocation = buildClientUrl("/onyx.ico");
-  let enterpriseSettings: EnterpriseSettings | null = null;
-  if (SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED) {
-    enterpriseSettings = await (await fetchEnterpriseSettingsSS()).json();
-    logoLocation = enterpriseSettings?.logo || buildClientUrl("/onyx.ico");
-  }
+  const enterpriseName = process.env.ENTERPRISE_NAME || "GrantGPT";
+  const enterpriseLogo = process.env.ENTERPRISE_LOGO || buildClientUrl("/onyx.ico");
 
   return {
-    title: enterpriseSettings?.name || "GrantGPT",
+    title: enterpriseName,
     description: "Matching you with the perfect Grants",
     icons: {
-      icon: logoLocation,
+      icon: enterpriseLogo,
     },
   };
 }
 
 export const dynamic = "force-dynamic";
 
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
+
 export default async function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [combinedSettings, assistantsData, user, authTypeMetadata] =
-    await Promise.all([
-      fetchSettingsSS(),
-      fetchAssistantData(),
-      getCurrentUserSS(),
-      getAuthTypeMetadataSS(),
-    ]);
-
-  const productGating =
-    combinedSettings?.settings.application_status ?? ApplicationStatus.ACTIVE;
+}: RootLayoutProps) {
+  const enterpriseName = process.env.NEXT_PUBLIC_ENTERPRISE_NAME || "GrantGPT";
+  const enterpriseLogo = process.env.NEXT_PUBLIC_ENTERPRISE_LOGO || buildClientUrl("/onyx.ico");
 
   const getPageContent = async (content: React.ReactNode) => (
     <html
@@ -90,31 +82,6 @@ export default async function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content"
         />
-        {CUSTOM_ANALYTICS_ENABLED &&
-          combinedSettings?.customAnalyticsScript && (
-            <script
-              type="text/javascript"
-              dangerouslySetInnerHTML={{
-                __html: combinedSettings.customAnalyticsScript,
-              }}
-            />
-          )}
-
-        {GTM_ENABLED && (
-          <Script
-            id="google-tag-manager"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-               j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-               'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-               })(window,document,'script','dataLayer','GTM-PZXS36NG');
-             `,
-            }}
-          />
-        )}
       </head>
 
       <body className={`relative ${inter.variable} font-hanken`}>
@@ -125,42 +92,18 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <div className="text-text min-h-screen bg-background">
-            <PHProvider>{content}</PHProvider>
+            {content}
           </div>
         </ThemeProvider>
       </body>
     </html>
   );
 
-  if (productGating === ApplicationStatus.GATED_ACCESS) {
-    return getPageContent(<AccessRestrictedPage />);
-  }
-
-  if (!combinedSettings) {
-    return getPageContent(
-      NEXT_PUBLIC_CLOUD_ENABLED ? <CloudError /> : <Error />
-    );
-  }
-
-  const { assistants, hasAnyConnectors, hasImageCompatibleModel } =
-    assistantsData;
-
   return getPageContent(
-    <AppProvider
-      authTypeMetadata={authTypeMetadata}
-      user={user}
-      settings={combinedSettings}
-      assistants={assistants}
-      hasAnyConnectors={hasAnyConnectors}
-      hasImageCompatibleModel={hasImageCompatibleModel}
-    >
-      <DocumentsProvider>
-        <Suspense fallback={null}>
-          <PostHogPageView />
-        </Suspense>
-        {children}
-        {process.env.NEXT_PUBLIC_POSTHOG_KEY && <WebVitals />}
-      </DocumentsProvider>
-    </AppProvider>
+    <>
+      <OnyxInitializingLoader enterpriseName={enterpriseName} />
+      <FixedLogo enterpriseLogo={enterpriseLogo} />
+      {children}
+    </>
   );
 }

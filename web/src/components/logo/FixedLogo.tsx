@@ -4,6 +4,7 @@ import React, { memo } from "react";
 import { HeaderTitle } from "@/components/header/HeaderTitle";
 import { Logo } from "@/components/logo/Logo";
 import { SettingsContext } from "@/components/settings/SettingsProvider";
+import Image from "next/image";
 import { buildClientUrl } from "@/lib/utilsSS";
 import { NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED } from "@/lib/constants";
 import Link from "next/link";
@@ -13,13 +14,18 @@ import { LogoType } from "@/components/logo/Logo";
 import { EnterpriseSettings } from "@/app/admin/settings/interfaces";
 import { useRouter } from "next/navigation";
 
+interface FixedLogoProps {
+  enterpriseLogo: string;
+  backgroundToggled?: boolean;
+}
+
 export const LogoComponent = memo(function LogoComponent({
-  enterpriseSettings,
+  enterpriseLogo,
   backgroundToggled,
   show,
   isAdmin,
 }: {
-  enterpriseSettings: EnterpriseSettings | null;
+  enterpriseLogo: string;
   backgroundToggled?: boolean;
   show?: boolean;
   isAdmin?: boolean;
@@ -33,36 +39,15 @@ export const LogoComponent = memo(function LogoComponent({
         ${!show && "mobile:hidden"}
        flex text-text-900 items-center gap-x-1`}
     >
-      {enterpriseSettings && enterpriseSettings.application_name ? (
-        <>
-          <div className="flex-none my-auto">
-            <Logo height={24} width={24} />
-          </div>
-          <div className="w-full">
-            <HeaderTitle backgroundToggled={backgroundToggled}>
-              {enterpriseSettings.application_name}
-            </HeaderTitle>
-            {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED && (
-              <p className="text-xs text-left text-subtle whitespace-nowrap overflow-hidden text-ellipsis">
-                Powered by GrantGPT
-              </p>
-            )}
-          </div>
-        </>
-      ) : (
-        <LogoType />
-      )}
+      <img src={enterpriseLogo} height={24} width={24} alt="Logo" />
     </div>
   );
 });
 
 export default function FixedLogo({
+  enterpriseLogo,
   backgroundToggled,
-}: {
-  backgroundToggled?: boolean;
-}) {
-  const combinedSettings = useContext(SettingsContext);
-  const enterpriseSettings = combinedSettings?.enterpriseSettings;
+}: FixedLogoProps) {
 
   return (
     <>
@@ -71,7 +56,7 @@ export default function FixedLogo({
         className="fixed cursor-pointer flex z-40 left-4 top-3 h-8"
       >
         <LogoComponent
-          enterpriseSettings={enterpriseSettings!}
+          enterpriseLogo={enterpriseLogo}
           backgroundToggled={backgroundToggled}
         />
       </Link>
