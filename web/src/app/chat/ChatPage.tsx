@@ -98,7 +98,7 @@ import {
 } from "@/lib/llm/utils";
 import { ChatInputBar } from "./input/ChatInputBar";
 import { useChatContext } from "@/components/context/ChatContext";
-import { v4 as uuidv4 from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { ChatPopup } from "./ChatPopup";
 import FunctionalHeader from "@/components/chat/Header";
 import { useSidebarVisibility } from "@/components/chat/hooks";
@@ -150,6 +150,7 @@ import MinimalMarkdown from "@/components/chat/MinimalMarkdown";
 const TEMP_USER_MESSAGE_ID = -1;
 const TEMP_ASSISTANT_MESSAGE_ID = -2;
 const SYSTEM_MESSAGE_ID = -3;
+const AUTO_SCROLL_ENABLED = true;
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -170,6 +171,33 @@ export default function ChatPage({
   initialFolders?: any;
   initialFiles?: any;
 }) {
+  // Initialize refs
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const waitForScrollRef = useRef<boolean>(false);
+  const hasPerformedInitialScroll = useRef<boolean>(false);
+  const scrollInitialized = useRef<boolean>(false);
+
+  // Function declarations
+  const onSubmit = async ({ 
+    messageOverride, 
+    overrideFileDescriptors, 
+    isSeededChat 
+  }: { 
+    messageOverride?: string;
+    overrideFileDescriptors?: FileDescriptor[];
+    isSeededChat?: boolean;
+  } = {}) => {
+    // Implementation to be added
+  };
+
+  const clearSelectedDocuments = () => {
+    // Implementation to be added
+  };
+
+  const setHasPerformedInitialScroll = (value: boolean) => {
+    hasPerformedInitialScroll.current = value;
+  };
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -221,7 +249,6 @@ export default function ChatPage({
           height: window.innerHeight,
         });
       };
-
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);
     }, []);
@@ -955,7 +982,7 @@ export default function ChatPage({
             0
           )}px`;
 
-          if (autoScrollEnabled) {
+          if (AUTO_SCROLL_ENABLED) {
             scrollableDivRef?.current.scrollBy({
               left: 0,
               top: Math.max(heightDifference, 0),
@@ -976,6 +1003,7 @@ export default function ChatPage({
 
     scrollableDivRef.current.scrollTo({
       top: scrollableDivRef.current.scrollHeight,
-      behavior: fast ? "auto" : "smooth"
+    behavior: fast ? "auto" : "smooth"
     });
   };
+}
