@@ -15,6 +15,14 @@ jobs:
         with:
           fetch-depth: 0 # Fetch all history to properly push changes
           token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
+      
+      - name: Setup Node.js # Added earlier, ensure it's here
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use your project's Node.js version
+
+      - name: Install Root Dependencies # ADD THIS STEP
+        run: npm ci # Install dependencies from root package-lock.json (including ts-morph)
 
       - name: "Debug: List files targeted for rebranding"
         run: |
@@ -90,14 +98,13 @@ jobs:
             echo "Warning: GrantHive-logo/favicon.ico not found."
           fi
 
-      - name: Install TypeScript
-        run: npm install -g typescript
-
-      - name: Install dependencies
-        run: npm install --save-dev @types/node typescript
-
-      - name: Verify Type Definitions
-        run: npm ls @types/node
+      # Removed separate install steps for typescript/@types/node as npm ci should handle them if they are in package.json
+      # - name: Install TypeScript
+      #   run: npm install -g typescript
+      # - name: Install dependencies
+      #   run: npm install --save-dev @types/node typescript
+      # - name: Verify Type Definitions
+      #   run: npm ls @types/node
 
       - name: Compile TypeScript
         run: |

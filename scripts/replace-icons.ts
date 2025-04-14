@@ -1,109 +1,118 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url'; // <--- Import this
+import { fileURLToPath } from 'url';
+import { Project, SyntaxKind, VariableDeclarationKind } from 'ts-morph';
 
-// ES Module compatible directory resolution
-const __filename = fileURLToPath(import.meta.url); // Get script's own path
-const __dirname = path.dirname(__filename);      // Get script's directory (scripts/dist)
-
-// Calculate paths relative to the script's directory
-const projectRoot = path.resolve(__dirname, '..', '..'); // Go up two levels (from scripts/dist to repo root)
+// --- Path Setup ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '..', '..'); // Assumes script is in scripts/dist
 
 const iconsFilePath = path.join(projectRoot, 'web', 'src', 'components', 'icons', 'icons.tsx');
 const grantGptSvgPath = path.join(projectRoot, 'web', 'public', 'logo.svg');
 const fixedLogoPath = path.join(projectRoot, 'web', 'src', 'components', 'logo', 'FixedLogo.tsx');
 
-// Add some debugging logs
 console.log(`Script directory (__dirname): ${__dirname}`);
 console.log(`Calculated project root: ${projectRoot}`);
-console.log(`Attempting to read icons file: ${iconsFilePath}`);
-console.log(`Attempting to read GrantGPT SVG file: ${grantGptSvgPath}`);
-console.log(`Attempting to read FixedLogo file: ${fixedLogoPath}`);
+console.log(`Processing icons file: ${iconsFilePath}`);
+console.log(`Using GrantGPT SVG file: ${grantGptSvgPath}`);
+console.log(`Processing FixedLogo file: ${fixedLogoPath}`);
 
-try {
-  // Check if file exists before reading (optional but good practice)
-  if (!fs.existsSync(iconsFilePath)) {
-    throw new Error(`ENOENT: icons.tsx not found at calculated path: ${iconsFilePath}`);
+// --- Replacement Content ---
+const logoTypeReplacementJsx = `<span style={{ fontSize: size ? Math.floor(size/5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>`;
+
+async function main() {
+  try {
+    // --- Read Input Files ---
+    if (!fs.existsSync(iconsFilePath)) throw new Error(`icons.tsx not found: ${iconsFilePath}`);
+    if (!fs.existsSync(grantGptSvgPath)) throw new Error(`logo.svg not found: ${grantGptSvgPath}`);
+    if (!fs.existsSync(fixedLogoPath)) throw new Error(`FixedLogo.tsx not found: ${fixedLogoPath}`);
+
+    const grantGptSvgContent = fs.readFileSync(grantGptSvgPath, 'utf8');
+    let fixedLogoContent = fs.readFileSync(fixedLogoPath, 'utf8');
+
+    // --- Extract SVG Content ---
+    const svgContentMatch = grantGptSvgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
+    if (!svgContentMatch || !svgContentMatch[1]) throw new Error('Could not extract content from GrantGPT SVG file.');
+    const grantGptInnerSvg = svgContentMatch[1].trim();
+    // Simple escaping for template literal insertion (adjust if needed for complex SVGs)
+    const escapedGrantGptInnerSvg = grantGptInnerSvg.replace(/`/g, '\\`').replace(/\${/g, '\\${');
+    console.log("Successfully extracted GrantGPT SVG paths.");
+
+    // --- Initialize ts-morph Project ---
+    const project = new Project({
+        // Optionally configure compiler options if needed, but usually inherits from tsconfig.json
+        // compilerOptions: { jsx: ts.JsxEmit.ReactJSX }, // Example if JSX parsing needs help
+    });
+
+    // --- Process icons.tsx ---
+    const sourceFile = project.addSourceFileAtPath(iconsFilePath);
+
+    // 1. Replace OnyxIcon SVG content
+    const onyxIconDeclaration = sourceFile.getVariableDeclaration('OnyxIcon');
+    if (onyxIconDeclaration) {
+        const arrowFunction = onyxIconDeclaration.getInitializerIfKind(SyntaxKind.ArrowFunction);
+        if (arrowFunction) {
+            const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
+            if (returnStatement) {
+                const jsxElement = returnStatement.getExpressionIfKind(SyntaxKind.ParenthesizedExpression)
+                                     ?.getExpressionIfKind(SyntaxKind.JsxElement); // Handle potential parentheses
+                if (jsxElement) {
+                    // Replace children of the <svg> tag
+                    jsxElement.setBodyText(`\n        ${escapedGrantGptInnerSvg}\n      `);
+                    console.log("Replaced OnyxIcon SVG content using AST.");
+                } else {
+                     console.warn("Could not find JsxElement within OnyxIcon return statement.");
+                }
+            } else {
+                 console.warn("Could not find return statement in OnyxIcon.");
+            }
+        } else {
+             console.warn("OnyxIcon variable initializer is not an arrow function.");
+        }
+    } else {
+        console.warn("OnyxIcon variable declaration not found.");
+    }
+
+    // 2. Replace OnyxLogoTypeIcon's returned JSX
+    const onyxLogoTypeDeclaration = sourceFile.getVariableDeclaration('OnyxLogoTypeIcon');
+    if (onyxLogoTypeDeclaration) {
+        const arrowFunction = onyxLogoTypeDeclaration.getInitializerIfKind(SyntaxKind.ArrowFunction);
+        if (arrowFunction) {
+            const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
+            if (returnStatement) {
+                 // Directly set the expression of the return statement
+                 // ts-morph handles parsing the string into the correct AST node
+                 returnStatement.setExpression(logoTypeReplacementJsx);
+                 console.log("Replaced OnyxLogoTypeIcon return expression using AST.");
+            } else {
+                 console.warn("Could not find return statement in OnyxLogoTypeIcon.");
+            }
+        } else {
+             console.warn("OnyxLogoTypeIcon variable initializer is not an arrow function.");
+        }
+    } else {
+        console.warn("OnyxLogoTypeIcon variable declaration not found.");
+    }
+
+    // Save the modified icons.tsx file
+    await sourceFile.save();
+    console.log(`Successfully updated ${iconsFilePath} using AST.`);
+
+    // --- Process FixedLogo.tsx (using simple string replace still) ---
+    const poweredByRegex = />\s*Powered by Onyx\s*</g;
+    if (fixedLogoContent.match(poweredByRegex)) {
+        fixedLogoContent = fixedLogoContent.replace(poweredByRegex, '>Powered by GrantGPT<');
+        fs.writeFileSync(fixedLogoPath, fixedLogoContent, 'utf8');
+        console.log(`Successfully updated "Powered by" text in ${fixedLogoPath}`);
+    } else {
+        console.warn(`"Powered by Onyx" text not found in ${fixedLogoPath}. It might have already been changed.`);
+    }
+
+  } catch (error) {
+    console.error("Error during AST-based replacement:", error);
+    process.exit(1);
   }
-  let iconsFileContent = fs.readFileSync(iconsFilePath, 'utf8');
-  
-  // Check if SVG file exists
-  if (!fs.existsSync(grantGptSvgPath)) {
-    throw new Error(`ENOENT: GrantGPT SVG not found at calculated path: ${grantGptSvgPath}`);
-  }
-  const grantGptSvgContent = fs.readFileSync(grantGptSvgPath, 'utf8');
-
-  // Check if FixedLogo file exists
-  if (!fs.existsSync(fixedLogoPath)) {
-    throw new Error(`ENOENT: FixedLogo.tsx not found at calculated path: ${fixedLogoPath}`);
-  }
-  let fixedLogoContent = fs.readFileSync(fixedLogoPath, 'utf8');
-
-  // 1. Extract the core path data from the GrantGPT SVG
-  const svgContentMatch = grantGptSvgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
-  if (!svgContentMatch || !svgContentMatch[1]) {
-    throw new Error('Could not extract content from GrantGPT SVG file.');
-  }
-  // Get everything inside the <svg> tag, including paths, defs, etc.
-  const grantGptInnerSvg = svgContentMatch[1].trim();
-  // Escape special characters for safe string insertion
-  const escapedGrantGptInnerSvg = grantGptInnerSvg
-    .replace(/[`$\\]/g, '\\$&')
-    .replace(/"/g, '\\"')
-    .trim();
-
-  console.log("Successfully extracted GrantGPT SVG paths.");
-
-  // 2. Replace OnyxIcon SVG content - More robust regex
-  // Matches the entire function definition more reliably
-  const onyxIconRegex = /(export const OnyxIcon = \({[^}]*}: IconProps\) => \{\s*return \(\s*<svg[^>]*?(?:width="[^"]*"|height="[^"]*"|className={[^}]*})*>)([^]*?)(<\/svg>\s*\);\s*\};)/m;
-
-  if (iconsFileContent.match(onyxIconRegex)) {
-    // Replace only the content between the <svg> tags
-    iconsFileContent = iconsFileContent.replace(
-      onyxIconRegex,
-      `$1\n        ${escapedGrantGptInnerSvg}\n      $3`
-    );
-    console.log("Replaced OnyxIcon SVG content.");
-  } else {
-    console.warn("OnyxIcon definition not found or pattern mismatch. Skipping OnyxIcon replacement.");
-  }
-
-  // 3. Replace OnyxLogoTypeIcon's returned JSX with a simple span
-  // SIMPLIFIED Regex to capture the whole return body more broadly
-  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \({[^}]*}: IconProps\) => \{\s*return\s*\()([^]*?)(\s*\);\s*\};)/m;
-  
-  // Ensure we are using the CORRECTED replacement JSX (no template literal)
-  const logoTypeReplacementJsx = '<span style={{ fontSize: size ? Math.floor(size/5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>';
-
-  if (iconsFileContent.match(onyxLogoTypeRegex)) {
-    // Replace the entire captured body (Group 2) with the correct JSX
-    iconsFileContent = iconsFileContent.replace(
-      onyxLogoTypeRegex,
-      // Reconstruct as: FunctionStart(CorrectJsx)FunctionEnd
-      `$1${logoTypeReplacementJsx}$3` 
-    );
-    console.log("Replaced OnyxLogoTypeIcon with corrected text span JSX."); 
-  } else {
-    // If this still fails, something is fundamentally wrong with the input or regex approach
-    console.warn("OnyxLogoTypeIcon definition STILL not found or pattern mismatch. Skipping OnyxLogoTypeIcon replacement."); 
-  }
-
-  // Write the modified icons file content
-  fs.writeFileSync(iconsFilePath, iconsFileContent, 'utf8');
-  console.log(`Successfully updated ${iconsFilePath}`);
-
-  // 4. Replace "Powered by Onyx" in FixedLogo.tsx
-  const poweredByRegex = />\s*Powered by Onyx\s*</g; // Target the text node more specifically
-  if (fixedLogoContent.match(poweredByRegex)) {
-    fixedLogoContent = fixedLogoContent.replace(poweredByRegex, '>Powered by GrantGPT<');
-    fs.writeFileSync(fixedLogoPath, fixedLogoContent, 'utf8');
-    console.log(`Successfully updated "Powered by" text in ${fixedLogoPath}`);
-  } else {
-     console.warn(`"Powered by Onyx" text not found in ${fixedLogoPath}. It might have already been changed.`);
-  }
-
-} catch (error) {
-  console.error("Error during icon/text replacement:", error);
-  process.exit(1); // Ensure script exits on error
 }
+
+main();
