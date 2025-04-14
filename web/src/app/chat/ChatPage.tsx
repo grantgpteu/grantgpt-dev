@@ -11,7 +11,6 @@ import {
   BackendMessage,
   BUFFER_COUNT,
   ChatFileType,
-  ChatSession,
   ChatSessionSharedStatus,
   FileDescriptor,
   FileChatDisplay,
@@ -99,7 +98,7 @@ import {
 } from "@/lib/llm/utils";
 import { ChatInputBar } from "./input/ChatInputBar";
 import { useChatContext } from "@/components/context/ChatContext";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 from "uuid";
 import { ChatPopup } from "./ChatPopup";
 import FunctionalHeader from "@/components/chat/Header";
 import { useSidebarVisibility } from "@/components/chat/hooks";
@@ -147,6 +146,7 @@ import { ChatSearchModal } from "./chat_search/ChatSearchModal";
 import { ErrorBanner } from "./message/Resubmit";
 import MinimalMarkdown from "@/components/chat/MinimalMarkdown";
 
+// Constants
 const TEMP_USER_MESSAGE_ID = -1;
 const TEMP_ASSISTANT_MESSAGE_ID = -2;
 const SYSTEM_MESSAGE_ID = -3;
@@ -969,13 +969,13 @@ export default function ChatPage({
   };
 
   const clientScrollToBottom = (fast?: boolean) => {
-    waitForScrollRef.current = true;
+    if (!endDivRef.current || !scrollableDivRef.current) {
+      console.error("endDivRef or scrollableDivRef not found");
+      return;
+    }
 
-    setTimeout(() => {
-      if (!endDivRef.current || !scrollableDivRef.current) {
-        console.error("endDivRef or scrollableDivRef not found");
-        return;
-      }
-
-      const rect = endDivRef.current.getBoundingClientRect();
-      const
+    scrollableDivRef.current.scrollTo({
+      top: scrollableDivRef.current.scrollHeight,
+      behavior: fast ? "auto" : "smooth"
+    });
+  };
