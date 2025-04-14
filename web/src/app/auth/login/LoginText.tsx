@@ -11,7 +11,7 @@ export const LoginText = ({ enterpriseName }: LoginTextProps) => {
   return (
     <>
       Log In to{" "}
-      {enterpriseName || "GrantGPT"}
+      {(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}
     </>
   );
 };

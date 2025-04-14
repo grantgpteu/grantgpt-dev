@@ -50,11 +50,18 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const enterpriseName = process.env.ENTERPRISE_NAME || "GrantGPT";
-  const enterpriseLogo = process.env.ENTERPRISE_LOGO || buildClientUrl("/onyx.ico");
+  let logoLocation = buildClientUrl("/onyx.ico");
+  let enterpriseSettings: EnterpriseSettings | null = null;
+  if (SERVER_SIDE_ONLY__PAID_ENTERPRISE_FEATURES_ENABLED) {
+    enterpriseSettings = await (await fetchEnterpriseSettingsSS()).json();
+    logoLocation =
+      enterpriseSettings && enterpriseSettings.use_custom_logo
+        ? "/api/enterprise-settings/logo"
+        : buildClientUrl("/onyx.ico");
+  }
 
   return {
-    title: enterpriseName,
+    title: enterpriseSettings?.application_name || "GrantGPT",
     description: "Matching you with the perfect Grants",
     icons: {
       icon: enterpriseLogo,

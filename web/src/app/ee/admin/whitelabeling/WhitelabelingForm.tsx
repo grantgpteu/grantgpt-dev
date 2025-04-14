@@ -33,16 +33,15 @@ export function WhitelabelingForm() {
   const enterpriseSettings = settings.enterpriseSettings;
 
   async function updateEnterpriseSettings(newValues: EnterpriseSettings) {
-    const payload = {
-      ...(enterpriseSettings || {}),
-      ...newValues,
-    };
     const response = await fetch("/api/admin/enterprise-settings", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...(enterpriseSettings || {}),
+        ...newValues,
+      }),
     });
     if (response.ok) {
       router.refresh();
@@ -58,8 +57,6 @@ export function WhitelabelingForm() {
         initialValues={{
           auto_scroll: settings?.settings?.auto_scroll || false,
           application_name: enterpriseSettings?.application_name || null,
-          logo: enterpriseSettings?.logo || "/logo.svg",
-          name: enterpriseSettings?.name || "GrantGPT",
           use_custom_logo: enterpriseSettings?.use_custom_logo || false,
           use_custom_logotype: enterpriseSettings?.use_custom_logotype || false,
           two_lines_for_chat_header:
@@ -80,8 +77,6 @@ export function WhitelabelingForm() {
             .trim()
             .min(1, "Application name cannot be empty")
             .nullable(),
-          logo: Yup.string().nullable(),
-          name: Yup.string().nullable(),
           use_custom_logo: Yup.boolean().required(),
           use_custom_logotype: Yup.boolean().required(),
           custom_header_content: Yup.string().nullable(),
@@ -147,22 +142,6 @@ export function WhitelabelingForm() {
               name="application_name"
               subtext={`The custom name you are giving Onyx for your team. This will replace 'Onyx' everywhere in the UI.`}
               placeholder="Custom name which will replace 'Onyx'"
-              disabled={isSubmitting}
-            />
-
-            <TextFormField
-              label="Logo URL"
-              name="logo"
-              subtext="The URL of the logo to display."
-              placeholder="e.g., /logo.svg"
-              disabled={isSubmitting}
-            />
-
-            <TextFormField
-              label="Brand Name"
-              name="name"
-              subtext="The brand name to display."
-              placeholder="e.g., GrantGPT"
               disabled={isSubmitting}
             />
 

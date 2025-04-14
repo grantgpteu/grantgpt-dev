@@ -4,8 +4,6 @@ import React, { memo } from "react";
 import { HeaderTitle } from "@/components/header/HeaderTitle";
 import { Logo } from "@/components/logo/Logo";
 import { SettingsContext } from "@/components/settings/SettingsProvider";
-import Image from "next/image";
-import { buildClientUrl } from "@/lib/utilsSS";
 import { NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED } from "@/lib/constants";
 import Link from "next/link";
 import { useContext } from "react";
