@@ -34,7 +34,7 @@ try {
 
   // 2. Replace OnyxIcon SVG content - More robust regex
   // Matches the entire function definition more reliably
-  const onyxIconRegex = /(export const OnyxIcon = \({[^}]*}\) => \{\s*return \(\s*<svg[^>]*?(?:width="[^"]*"|height="[^"]*"|className={[^}]*})*>)([^]*?)(<\/svg>\s*\);\s*\};)/m;
+  const onyxIconRegex = /(export const OnyxIcon = \({[^}]*}: IconProps\) => \{\s*return \(\s*<svg[^>]*?(?:width="[^"]*"|height="[^"]*"|className={[^}]*})*>)([^]*?)(<\/svg>\s*\);\s*\};)/m;
 
   if (iconsFileContent.match(onyxIconRegex)) {
     // Replace only the content between the <svg> tags
@@ -49,16 +49,16 @@ try {
 
   // 3. Replace OnyxLogoTypeIcon's returned JSX with a simple span
   // Matches the entire function definition more reliably
-  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \({[^}]*}\) => \{\s*return \()([^]*?)(\);\s*\};)/m;
+  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \({[^}]*}: IconProps\) => \{\s*return)(?:\s*\()([^]*?)(\)\s*;\s*\};)/m;
   const logoTypeText = "GrantGPT";
   // Return proper JSX for the component
-  const logoTypeReplacementJsx = '<span style={{ fontSize: size ? ((typeof size === "number" ? Math.floor(size / 5) : size) + "px") : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>';
+  const logoTypeReplacementJsx = '<span style={{ fontSize: size ? Math.floor(size/5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>';
 
   if (iconsFileContent.match(onyxLogoTypeRegex)) {
     // Replace the entire return (...) block content
     iconsFileContent = iconsFileContent.replace(
       onyxLogoTypeRegex,
-      `$1${logoTypeReplacementJsx}$3`
+      `$1 (${logoTypeReplacementJsx})$3`
     );
     console.log("Replaced OnyxLogoTypeIcon with text span JSX.");
   } else {
