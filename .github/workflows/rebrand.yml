@@ -118,6 +118,12 @@ jobs:
           cd .. # Go back to the root directory
           echo "Back in directory: $(pwd)"
 
+      - name: Debug - Show icons.tsx BEFORE script
+        run: |
+          echo "Content of web/src/components/icons/icons.tsx BEFORE replacement:"
+          cat web/src/components/icons/icons.tsx || echo "icons.tsx not found before script!"
+          echo "--- End of icons.tsx content ---"
+
       - name: Replace Hardcoded SVG Icons
         run: |
           set -e # Exit immediately if a command exits with a non-zero status.
@@ -157,6 +163,12 @@ jobs:
             echo "Error: web/src/components/icons/icons.tsx was NOT modified by the script. Exiting."
             exit 1 # Fail if the target file wasn't changed
           fi
+
+      - name: Debug - Show icons.tsx AFTER script
+        run: |
+          echo "Content of web/src/components/icons/icons.tsx AFTER replacement attempt:"
+          cat web/src/components/icons/icons.tsx || echo "icons.tsx not found after script!"
+          echo "--- End of icons.tsx content ---"
 
       - name: Apply Design & Color Adjustments
         run: |
