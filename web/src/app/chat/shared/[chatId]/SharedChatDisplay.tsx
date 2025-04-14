@@ -397,7 +397,7 @@ export function SharedChatDisplay({
                 ) : (
                   <div className="grow flex-0 h-screen w-full flex items-center justify-center">
                     <div className="mb-[33vh]">
-                      <OnyxInitializingLoader enterpriseName={settings?.enterpriseSettings?.name || "GrantGPT"} />
+                      <OnyxInitializingLoader />
                     </div>
                   </div>
                 )}
@@ -418,7 +418,7 @@ export function SharedChatDisplay({
             </div>
           </div>
 
-          <FixedLogo backgroundToggled={false} enterpriseLogo={settings?.enterpriseSettings?.logo || ""} />
+          <FixedLogo backgroundToggled={false} />
           <BackToOnyxButton documentSidebarVisible={documentSidebarVisible} />
         </div>
       </div>

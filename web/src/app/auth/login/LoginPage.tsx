@@ -32,7 +32,7 @@ export default function LoginPage({
       {authUrl && authTypeMetadata && (
         <>
           <h2 className="text-center text-xl text-strong font-bold">
-            <LoginText enterpriseName={process.env.NEXT_PUBLIC_ENTERPRISE_NAME || "GrantGPT"} />
+            <LoginText />
           </h2>
 
           <SignInButton
@@ -68,7 +68,7 @@ export default function LoginPage({
         <>
           <div className="flex">
             <Title className="mb-2 mx-auto text-xl text-strong font-bold">
-              <LoginText enterpriseName={process.env.NEXT_PUBLIC_ENTERPRISE_NAME || "GrantGPT"} />
+              <LoginText />
             </Title>
           </div>
           <EmailPasswordForm nextUrl={nextUrl} />

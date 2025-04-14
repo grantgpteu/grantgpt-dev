@@ -51,7 +51,7 @@ export default function LogoWithText({
           ) : (
             <LogoComponent
               show={toggled}
-              enterpriseLogo={enterpriseSettings?.logo || ""}
+              enterpriseSettings={enterpriseSettings!}
               backgroundToggled={toggled}
             />
           )}
@@ -76,7 +76,7 @@ export default function LogoWithText({
           } break-words inline-block w-fit text-text-700 dark:text-neutral-300 text-xl`}
         >
           <LogoComponent
-            enterpriseLogo={enterpriseSettings?.logo || ""}
+            enterpriseSettings={enterpriseSettings!}
             backgroundToggled={toggled}
           />
         </div>

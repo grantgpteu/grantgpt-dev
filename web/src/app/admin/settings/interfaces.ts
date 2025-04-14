@@ -68,6 +68,9 @@ export interface EnterpriseSettings {
   custom_popup_header: string | null;
   custom_popup_content: string | null;
   enable_consent_screen: boolean | null;
+  logo: string; // Added: URL path to the logo
+  name: string; // Added: Brand name
+  tagline?: string; // Added: Tagline (optional)
 }
 
 export interface CombinedSettings {

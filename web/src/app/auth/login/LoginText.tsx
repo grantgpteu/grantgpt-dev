@@ -3,15 +3,12 @@
 import React, { useContext } from "react";
 import { SettingsContext } from "@/components/settings/SettingsProvider";
 
-interface LoginTextProps {
-  enterpriseName: string;
-}
-
-export const LoginText = ({ enterpriseName }: LoginTextProps) => {
+export const LoginText = () => {
+  const settings = useContext(SettingsContext);
   return (
     <>
       Log In to{" "}
-      {(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}
+      {(settings && settings?.enterpriseSettings?.name) || "Onyx"}
     </>
   );
 };

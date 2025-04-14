@@ -156,7 +156,7 @@ export default function SidebarWrapper<T extends object>({
           <div className={` w-full mx-auto`}>{children}</div>
         </div>
       </div>
-      <FixedLogo enterpriseLogo={process.env.NEXT_PUBLIC_ENTERPRISE_LOGO || "/logo.svg"} backgroundToggled={sidebarVisible || showDocSidebar} />
+      <FixedLogo backgroundToggled={sidebarVisible || showDocSidebar} />
     </div>
   );
 }

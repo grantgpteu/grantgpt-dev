@@ -209,7 +209,7 @@ function usePaginatedFetch<T extends PaginatedType>({
       setCurrentPageData(cachedBatches[batchNum][batchPageNum]);
       setIsLoading(false);
     }
-  }, [currentPage, cachedBatches, pagesPerBatch, batchAndPageIndices]);
+  }, [currentPage, cachedBatches, pagesPerBatch]);
 
   // Implements periodic refresh
   useEffect(() => {
@@ -221,7 +221,7 @@ function usePaginatedFetch<T extends PaginatedType>({
     }, refreshIntervalInMs);
 
     return () => clearInterval(interval);
-  }, [currentPage, pagesPerBatch, refreshIntervalInMs, fetchBatchData, batchAndPageIndices]);
+  }, [currentPage, pagesPerBatch, refreshIntervalInMs, fetchBatchData]);
 
   // Manually refreshes the current batch
   const refresh = useCallback(async () => {
