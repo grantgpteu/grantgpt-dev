@@ -101,18 +101,47 @@ jobs:
 
       - name: Compile TypeScript
         run: |
+          set -e # Exit immediately if a command exits with a non-zero status.
+          echo "Current directory: $(pwd)"
+          echo "Compiling TypeScript in scripts directory..."
           cd scripts
-          # Compile TypeScript to JavaScript
+          echo "Now in directory: $(pwd)"
+          ls -la # List files before compiling
           tsc --project tsconfig.json
+          # Check exit code of tsc explicitly
+          if [ $? -ne 0 ]; then
+            echo "TypeScript compilation failed!"
+            exit 1
+          fi
+          echo "TypeScript compilation finished. Checking output..."
+          ls -la dist # List files after compiling
+          cd .. # Go back to the root directory
+          echo "Back in directory: $(pwd)"
 
       - name: Replace Hardcoded SVG Icons
         run: |
+          set -e # Exit immediately if a command exits with a non-zero status.
           echo "Running script to replace hardcoded SVG icons..."
+          
+          # Verify the source icons.tsx file exists before running the script
+          SOURCE_ICON_FILE="web/src/components/icons/icons.tsx"
+          if [ ! -f "$SOURCE_ICON_FILE" ]; then
+            echo "Error: Source file $SOURCE_ICON_FILE not found!"
+            exit 1
+          fi
+          echo "Source file $SOURCE_ICON_FILE found."
+
           # Point back to the .js file, Node will treat it as ESM due to scripts/package.json
           SCRIPT_PATH="scripts/dist/replace-icons.js" 
           if [ -f "$SCRIPT_PATH" ]; then
+            echo "Executing node $SCRIPT_PATH..."
             node "$SCRIPT_PATH" # Execute the .js script (as an ES Module)
-            echo "Icon replacement script executed."
+            # Check exit code of node script explicitly
+            if [ $? -ne 0 ]; then
+              echo "Node script execution failed!"
+              exit 1
+            fi
+            echo "Icon replacement script executed successfully."
           else
             echo "Error: $SCRIPT_PATH not found after compilation."
             # Optional: List files in dist to help debug
