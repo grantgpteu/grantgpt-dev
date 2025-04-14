@@ -70,23 +70,23 @@ try {
   }
 
   // 3. Replace OnyxLogoTypeIcon's returned JSX with a simple span
-  // UPDATED Regex to handle the return ((...)) structure
-  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \({[^}]*}: IconProps\) => \{\s*return\s*\()(\s*\([^]*?\)\s*)(\);\s*\};)/m;
+  // SIMPLIFIED Regex to capture the whole return body more broadly
+  const onyxLogoTypeRegex = /(export const OnyxLogoTypeIcon = \({[^}]*}: IconProps\) => \{\s*return\s*\()([^]*?)(\s*\);\s*\};)/m;
   
   // Ensure we are using the CORRECTED replacement JSX (no template literal)
   const logoTypeReplacementJsx = '<span style={{ fontSize: size ? Math.floor(size/5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>';
 
   if (iconsFileContent.match(onyxLogoTypeRegex)) {
-    // Replace the entire inner double-parenthesized block (Group 2) with the correct JSX
+    // Replace the entire captured body (Group 2) with the correct JSX
     iconsFileContent = iconsFileContent.replace(
       onyxLogoTypeRegex,
       // Reconstruct as: FunctionStart(CorrectJsx)FunctionEnd
       `$1${logoTypeReplacementJsx}$3` 
     );
-    console.log("Replaced OnyxLogoTypeIcon with corrected text span JSX."); // Updated log message
+    console.log("Replaced OnyxLogoTypeIcon with corrected text span JSX."); 
   } else {
-    // This warning should hopefully not appear anymore
-    console.warn("OnyxLogoTypeIcon definition not found or pattern mismatch. Skipping OnyxLogoTypeIcon replacement."); 
+    // If this still fails, something is fundamentally wrong with the input or regex approach
+    console.warn("OnyxLogoTypeIcon definition STILL not found or pattern mismatch. Skipping OnyxLogoTypeIcon replacement."); 
   }
 
   // Write the modified icons file content
