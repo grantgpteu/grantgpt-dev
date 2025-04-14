@@ -108,13 +108,13 @@ jobs:
       - name: Replace Hardcoded SVG Icons
         run: |
           echo "Running script to replace hardcoded SVG icons..."
-          # Point to the expected .mjs path for ES Modules compiled with NodeNext
-          SCRIPT_PATH="scripts/dist/replace-icons.mjs" 
+          # Point back to the .js file, Node will treat it as ESM due to scripts/package.json
+          SCRIPT_PATH="scripts/dist/replace-icons.js" 
           if [ -f "$SCRIPT_PATH" ]; then
-            node "$SCRIPT_PATH" # Execute the .mjs script
+            node "$SCRIPT_PATH" # Execute the .js script (as an ES Module)
             echo "Icon replacement script executed."
           else
-            echo "Error: $SCRIPT_PATH not found after compilation. Check tsconfig.json module/outDir settings."
+            echo "Error: $SCRIPT_PATH not found after compilation."
             # Optional: List files in dist to help debug
             echo "Contents of scripts/dist:"
             ls -la scripts/dist || echo "scripts/dist directory not found."
