@@ -108,15 +108,17 @@ jobs:
       - name: Replace Hardcoded SVG Icons
         run: |
           echo "Running script to replace hardcoded SVG icons..."
-          if [ -f scripts/replace-icons.js ]; then
-            node scripts/replace-icons.js
+          # Point to the correct path in the 'dist' directory
+          SCRIPT_PATH="scripts/dist/replace-icons.js" 
+          if [ -f "$SCRIPT_PATH" ]; then
+            node "$SCRIPT_PATH" # Execute the script from its actual location
             echo "Icon replacement script executed."
           else
-            echo "Error: scripts/replace-icons.js not found after compilation."
+            echo "Error: $SCRIPT_PATH not found after compilation."
             exit 1  # Fail the workflow if the script doesn't exist
           fi
           
-          # Verify icons.tsx was modified by checking git status
+          # Verification step remains the same
           if ! git diff --quiet web/src/components/icons/icons.tsx; then
             echo "Verified: web/src/components/icons/icons.tsx was modified by the script."
           else
