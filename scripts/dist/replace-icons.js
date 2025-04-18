@@ -1,225 +1,121 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { Project, SyntaxKind, Node } from 'ts-morph';
-
-// --- Configuration ---
-const CONFIG = {
-  brandingChanges: {
-    oldBrand: 'Onyx',
-    newBrand: 'GrantGPT',
-  },
-  paths: {
-    // These paths will be calculated relative to the project root
-    iconsFile: ['web', 'src', 'components', 'icons', 'icons.tsx'],
-    logoSvgFile: ['web', 'public', 'logo.svg'],
-    fixedLogoFile: ['web', 'src', 'components', 'logo', 'FixedLogo.tsx'],
-  },
-  components: {
-    iconName: 'OnyxIcon',
-    logoTypeName: 'OnyxLogoTypeIcon',
-    poweredByText: 'Powered by Onyx',
-  },
-};
-
+import { Project, SyntaxKind } from 'ts-morph';
 // --- Path Setup ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// Adjust this if the script is not in scripts/dist
-const projectRoot = path.resolve(__dirname, '..', '..');
-
-// Build absolute paths
-const getAbsolutePath = (pathSegments: string[]): string => 
-  path.join(projectRoot, ...pathSegments);
-
-const iconsFilePath = getAbsolutePath(CONFIG.paths.iconsFile);
-const grantGptSvgPath = getAbsolutePath(CONFIG.paths.logoSvgFile);
-const fixedLogoPath = getAbsolutePath(CONFIG.paths.fixedLogoFile);
-
-// --- Logging Utilities ---
-const logger = {
-  info: (message: string) => console.log(`[INFO] ${message}`),
-  warn: (message: string) => console.warn(`[WARN] ${message}`),
-  error: (message: string) => console.error(`[ERROR] ${message}`),
-  debug: (message: string) => console.log(`[DEBUG] ${message}`),
-};
-
-// Log configuration paths
-logger.debug(`Script directory: ${__dirname}`);
-logger.debug(`Project root: ${projectRoot}`);
-logger.debug(`Icons file: ${iconsFilePath}`);
-logger.debug(`Logo SVG file: ${grantGptSvgPath}`);
-logger.debug(`FixedLogo file: ${fixedLogoPath}`);
-
+const projectRoot = path.resolve(__dirname, '..', '..'); // Assumes script is in scripts/dist
+const iconsFilePath = path.join(projectRoot, 'web', 'src', 'components', 'icons', 'icons.tsx');
+const grantGptSvgPath = path.join(projectRoot, 'web', 'public', 'logo.svg');
+const fixedLogoPath = path.join(projectRoot, 'web', 'src', 'components', 'logo', 'FixedLogo.tsx');
+console.log(`Script directory (__dirname): ${__dirname}`);
+console.log(`Calculated project root: ${projectRoot}`);
+console.log(`Processing icons file: ${iconsFilePath}`);
+console.log(`Using GrantGPT SVG file: ${grantGptSvgPath}`);
+console.log(`Processing FixedLogo file: ${fixedLogoPath}`);
 // --- Replacement Content ---
-const logoTypeReplacementJsx = `<span 
-  style={{ 
-    fontSize: size ? Math.floor(size/5) + "px" : "1rem", 
-    fontWeight: "bold" 
-  }} 
-  className={className}
->
-  ${CONFIG.brandingChanges.newBrand}
-</span>`;
-
-// --- Helper Functions ---
-function checkFileExists(filePath: string): void {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
-  }
-}
-
-function extractSvgContent(svgFile: string): string {
-  const svgContent = fs.readFileSync(svgFile, 'utf8');
-  
-  // More robust SVG content extraction - looks for content between opening and closing svg tags
-  const svgContentMatch = svgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
-  
-  if (!svgContentMatch || !svgContentMatch[1]) {
-    throw new Error(`Could not extract content from SVG file: ${svgFile}`);
-  }
-  
-  return svgContentMatch[1].trim();
-}
-
-function escapeForTemplateLiteral(text: string): string {
-  return text
-    .replace(/`/g, '\\`')
-    .replace(/\${/g, '\\${');
-}
-
-async function modifyIconsFile(
-  filePath: string, 
-  innerSvgContent: string
-): Promise<void> {
-  const project = new Project({});
-  const sourceFile = project.addSourceFileAtPath(filePath);
-
-  let successCount = 0;
-  
-  // 1. Replace SVG content in the icon component
-  const iconDeclaration = sourceFile.getVariableDeclaration(CONFIG.components.iconName);
-  if (!iconDeclaration) {
-    throw new Error(`${CONFIG.components.iconName} variable declaration not found`);
-  }
-
-  try {
-    const arrowFunction = iconDeclaration.getInitializerIfKind(SyntaxKind.ArrowFunction);
-    if (!arrowFunction) {
-      throw new Error(`${CONFIG.components.iconName} is not defined as an arrow function`);
-    }
-
-    const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
-    if (!returnStatement) {
-      throw new Error(`Could not find return statement in ${CONFIG.components.iconName}`);
-    }
-
-    // Handle both direct JSX elements and parenthesized expressions
-    let jsxElement = returnStatement.getExpressionIfKind(SyntaxKind.JsxElement);
-    
-    if (!jsxElement) {
-      const parenthesized = returnStatement.getExpressionIfKind(SyntaxKind.ParenthesizedExpression);
-      if (parenthesized) {
-        jsxElement = parenthesized.getExpressionIfKind(SyntaxKind.JsxElement);
-      }
-    }
-
-    if (!jsxElement) {
-      throw new Error(`Could not find JSX element in return statement of ${CONFIG.components.iconName}`);
-    }
-
-    // Replace children of the <svg> tag
-    jsxElement.setBodyText(`\n        ${escapeForTemplateLiteral(innerSvgContent)}\n      `);
-    logger.info(`Successfully updated ${CONFIG.components.iconName} SVG content`);
-    successCount++;
-  } catch (error) {
-    throw new Error(`Failed to update ${CONFIG.components.iconName}: ${error.message}`);
-  }
-
-  // 2. Replace Logo Type component
-  const logoTypeDeclaration = sourceFile.getVariableDeclaration(CONFIG.components.logoTypeName);
-  if (!logoTypeDeclaration) {
-    throw new Error(`${CONFIG.components.logoTypeName} variable declaration not found`);
-  }
-
-  try {
-    const arrowFunction = logoTypeDeclaration.getInitializerIfKind(SyntaxKind.ArrowFunction);
-    if (!arrowFunction) {
-      throw new Error(`${CONFIG.components.logoTypeName} is not defined as an arrow function`);
-    }
-
-    const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
-    if (!returnStatement) {
-      throw new Error(`Could not find return statement in ${CONFIG.components.logoTypeName}`);
-    }
-
-    const returnedExpression = returnStatement.getExpression();
-    if (!returnedExpression) {
-      throw new Error(`Could not get expression from return statement in ${CONFIG.components.logoTypeName}`);
-    }
-
-    // Replace the entire node that was being returned with the new JSX text
-    returnedExpression.replaceWithText(logoTypeReplacementJsx);
-    logger.info(`Successfully updated ${CONFIG.components.logoTypeName} component`);
-    successCount++;
-  } catch (error) {
-    throw new Error(`Failed to update ${CONFIG.components.logoTypeName}: ${error.message}`);
-  }
-
-  // Save changes
-  await sourceFile.save();
-  
-  if (successCount === 2) {
-    logger.info(`Successfully updated both components in ${filePath}`);
-  } else {
-    throw new Error(`Only ${successCount}/2 components were successfully updated in ${filePath}`);
-  }
-}
-
-function modifyFixedLogoFile(filePath: string): void {
-  let content = fs.readFileSync(filePath, 'utf8');
-  const oldText = CONFIG.components.poweredByText;
-  const newText = `Powered by ${CONFIG.brandingChanges.newBrand}`;
-  
-  // More precise regex to find the text while preserving whitespace
-  const poweredByRegex = new RegExp(`>\\s*${oldText}\\s*<`, 'g');
-  
-  if (!content.match(poweredByRegex)) {
-    throw new Error(`"${oldText}" text not found in ${filePath}`);
-  }
-  
-  content = content.replace(poweredByRegex, `>${newText}<`);
-  fs.writeFileSync(filePath, content, 'utf8');
-  logger.info(`Successfully updated "Powered by" text in ${filePath}`);
-}
-
-// --- Main Function ---
+const logoTypeReplacementJsx = `<span style={{ fontSize: size ? Math.floor(size/5) + "px" : "1rem", fontWeight: "bold" }} className={className}>GrantGPT</span>`;
 async function main() {
-  try {
-    // Check if all required files exist
-    logger.info("Checking file paths...");
-    checkFileExists(iconsFilePath);
-    checkFileExists(grantGptSvgPath);
-    checkFileExists(fixedLogoPath);
-    logger.info("All required files found");
-    
-    // Extract SVG content
-    logger.info("Extracting SVG content...");
-    const svgContent = extractSvgContent(grantGptSvgPath);
-    logger.info("Successfully extracted SVG content");
-
-    // Process files
-    logger.info("Modifying icons file...");
-    await modifyIconsFile(iconsFilePath, svgContent);
-    
-    logger.info("Modifying fixed logo file...");
-    modifyFixedLogoFile(fixedLogoPath);
-    
-    logger.info("Rebranding completed successfully!");
-  } catch (error) {
-    logger.error(`Rebranding failed: ${error.message}`);
-    process.exit(1);
-  }
+    try {
+        // --- Read Input Files ---
+        if (!fs.existsSync(iconsFilePath))
+            throw new Error(`icons.tsx not found: ${iconsFilePath}`);
+        if (!fs.existsSync(grantGptSvgPath))
+            throw new Error(`logo.svg not found: ${grantGptSvgPath}`);
+        if (!fs.existsSync(fixedLogoPath))
+            throw new Error(`FixedLogo.tsx not found: ${fixedLogoPath}`);
+        const grantGptSvgContent = fs.readFileSync(grantGptSvgPath, 'utf8');
+        let fixedLogoContent = fs.readFileSync(fixedLogoPath, 'utf8');
+        // --- Extract SVG Content ---
+        const svgContentMatch = grantGptSvgContent.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
+        if (!svgContentMatch || !svgContentMatch[1])
+            throw new Error('Could not extract content from GrantGPT SVG file.');
+        const grantGptInnerSvg = svgContentMatch[1].trim();
+        // Simple escaping for template literal insertion (adjust if needed for complex SVGs)
+        const escapedGrantGptInnerSvg = grantGptInnerSvg.replace(/`/g, '\\`').replace(/\${/g, '\\${');
+        console.log("Successfully extracted GrantGPT SVG paths.");
+        // --- Initialize ts-morph Project ---
+        const project = new Project({
+        // Optionally configure compiler options if needed, but usually inherits from tsconfig.json
+        // compilerOptions: { jsx: ts.JsxEmit.ReactJSX }, // Example if JSX parsing needs help
+        });
+        // --- Process icons.tsx ---
+        const sourceFile = project.addSourceFileAtPath(iconsFilePath);
+        // 1. Replace OnyxIcon SVG content
+        const onyxIconDeclaration = sourceFile.getVariableDeclaration('OnyxIcon');
+        if (onyxIconDeclaration) {
+            const arrowFunction = onyxIconDeclaration.getInitializerIfKind(SyntaxKind.ArrowFunction);
+            if (arrowFunction) {
+                const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
+                if (returnStatement) {
+                    const jsxElement = returnStatement.getExpressionIfKind(SyntaxKind.ParenthesizedExpression)
+                        ?.getExpressionIfKind(SyntaxKind.JsxElement); // Handle potential parentheses
+                    if (jsxElement) {
+                        // Replace children of the <svg> tag
+                        jsxElement.setBodyText(`\n        ${escapedGrantGptInnerSvg}\n      `);
+                        console.log("Replaced OnyxIcon SVG content using AST.");
+                    }
+                    else {
+                        console.warn("Could not find JsxElement within OnyxIcon return statement.");
+                    }
+                }
+                else {
+                    console.warn("Could not find return statement in OnyxIcon.");
+                }
+            }
+            else {
+                console.warn("OnyxIcon variable initializer is not an arrow function.");
+            }
+        }
+        else {
+            console.warn("OnyxIcon variable declaration not found.");
+        }
+        // 2. Replace OnyxLogoTypeIcon's returned JSX
+        const onyxLogoTypeDeclaration = sourceFile.getVariableDeclaration('OnyxLogoTypeIcon');
+        if (onyxLogoTypeDeclaration) {
+            const arrowFunction = onyxLogoTypeDeclaration.getInitializerIfKind(SyntaxKind.ArrowFunction);
+            if (arrowFunction) {
+                const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
+                if (returnStatement) {
+                    const returnedExpression = returnStatement.getExpression(); // Get the node being returned
+                    if (returnedExpression) {
+                        // Replace the entire node that was being returned with the new JSX text
+                        returnedExpression.replaceWithText(logoTypeReplacementJsx);
+                        console.log("Replaced OnyxLogoTypeIcon return expression using AST.");
+                    }
+                    else {
+                        console.warn("Could not get expression from return statement in OnyxLogoTypeIcon.");
+                    }
+                }
+                else {
+                    console.warn("Could not find return statement in OnyxLogoTypeIcon.");
+                }
+            }
+            else {
+                console.warn("OnyxLogoTypeIcon variable initializer is not an arrow function.");
+            }
+        }
+        else {
+            console.warn("OnyxLogoTypeIcon variable declaration not found.");
+        }
+        // Save the modified icons.tsx file
+        await sourceFile.save();
+        console.log(`Successfully updated ${iconsFilePath} using AST.`);
+        // --- Process FixedLogo.tsx (using simple string replace still) ---
+        const poweredByRegex = />\s*Powered by Onyx\s*</g;
+        if (fixedLogoContent.match(poweredByRegex)) {
+            fixedLogoContent = fixedLogoContent.replace(poweredByRegex, '>Powered by GrantGPT<');
+            fs.writeFileSync(fixedLogoPath, fixedLogoContent, 'utf8');
+            console.log(`Successfully updated "Powered by" text in ${fixedLogoPath}`);
+        }
+        else {
+            console.warn(`"Powered by Onyx" text not found in ${fixedLogoPath}. It might have already been changed.`);
+        }
+    }
+    catch (error) {
+        console.error("Error during AST-based replacement:", error);
+        process.exit(1);
+    }
 }
-
 main();

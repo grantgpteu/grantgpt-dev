@@ -8,7 +8,7 @@ export const LoginText = () => {
   return (
     <>
       Log In to{" "}
-      {(settings && settings?.enterpriseSettings?.name) || "Onyx"}
+      {(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}
     </>
   );
 };

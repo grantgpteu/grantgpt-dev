@@ -81,27 +81,17 @@ async function main() {
         if (arrowFunction) {
             const returnStatement = arrowFunction.getFirstDescendantByKind(SyntaxKind.ReturnStatement);
             if (returnStatement) {
-                 const returnedExpr = returnStatement.getExpression(); // Get the node being returned
-                 if (returnedExpr) {
-                     // Check if the returned expression is directly a JsxElement (the span)
-                     const spanElement = returnedExpr.asKind(SyntaxKind.JsxElement); 
-                     if (spanElement) {
-                         // Replace the JsxElement node itself
-                         spanElement.replaceWithText(logoTypeReplacementJsx); 
-                         console.log("Replaced OnyxLogoTypeIcon's returned JsxElement using AST.");
-                     } else {
-                          // If not a direct JsxElement, maybe it's parenthesized? (Handle original case just in case)
-                          const parenthesizedSpan = returnedExpr.asKind(SyntaxKind.ParenthesizedExpression)
-                                                     ?.getExpressionIfKind(SyntaxKind.JsxElement);
-                          if (parenthesizedSpan) {
-                             parenthesizedSpan.replaceWithText(logoTypeReplacementJsx);
-                             console.log("Replaced OnyxLogoTypeIcon's parenthesized JsxElement using AST.");
-                          } else {
-                             console.warn(`OnyxLogoTypeIcon return expression was not a JsxElement or Parenthesized(JsxElement), but ${returnedExpr.getKindName()}. Skipping replacement.`);
-                          }
-                     }
+                 // Navigate: return -> (...) -> (...) -> <span>
+                 const spanElement = returnStatement.getExpressionIfKind(SyntaxKind.ParenthesizedExpression)
+                                        ?.getExpressionIfKind(SyntaxKind.ParenthesizedExpression) // Get the inner parentheses
+                                        ?.getExpressionIfKind(SyntaxKind.JsxElement); // Get the <span> element
+
+                 if (spanElement) {
+                     // Replace just the <span> node itself
+                     spanElement.replaceWithText(logoTypeReplacementJsx); 
+                     console.log("Replaced OnyxLogoTypeIcon's span element using AST.");
                  } else {
-                     console.warn("Could not get expression from return statement in OnyxLogoTypeIcon.");
+                     console.warn("Could not find the nested span JsxElement within OnyxLogoTypeIcon return statement.");
                  }
             } else {
                  console.warn("Could not find return statement in OnyxLogoTypeIcon.");
