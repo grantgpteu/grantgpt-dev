@@ -44,8 +44,8 @@ export const LogoComponent = memo(function LogoComponent({
         <Image
           src="/logotype.png" // Path relative to the public folder
           alt="GrantGPT Logo" // Updated Alt text
-          width={24} // Set desired width
-          height={24} // Set desired height
+          width={200} // Updated to 200px width
+          height={60} // Updated to 60px height to maintain proportion
         />
       </div>
 
@@ -85,7 +85,7 @@ export default function FixedLogo({
     <>
       <Link
         href="/chat"
-        className="fixed cursor-pointer flex z-40 left-4 top-3 h-8"
+        className="fixed cursor-pointer flex z-40 left-4 top-6 h-16"  // Adjusted height and top spacing
       >
         <LogoComponent
           enterpriseSettings={enterpriseSettings!}
