@@ -115,7 +115,7 @@ export const SettingsPanel = ({
         <SidebarSwitch
           checked={useOnyxAsNewTab}
           onCheckedChange={handleUseOnyxToggle}
-          label="Use Onyx as new tab page"
+          label="Use GrantGPT as new tab page"
         />
 
         <SidebarSwitch

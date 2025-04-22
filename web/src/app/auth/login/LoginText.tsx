@@ -8,7 +8,7 @@ export const LoginText = () => {
   return (
     <>
       Log In to{" "}
-      {(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT by GrantHive"}
+      {(settings && settings?.enterpriseSettings?.application_name) || "GrantGPT"}
     </>
   );
 };
