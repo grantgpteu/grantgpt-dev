@@ -4,6 +4,16 @@
 
 @layer base {
   :root {
+    --gh-primary: #0A2463;
+    --gh-secondary: #FFD166;
+    --gh-background: #F8F9FA;
+    --gh-text-primary: #133075;
+    --gh-lavender: #7B68EE;
+    --gh-teal: #3CAEA3;
+    --gh-text-secondary: #5D5B8D;
+    --gh-text-subtitle: #3D56A6;
+    --gh-text-highlight: #6A5ACD;
+
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
 
@@ -171,6 +181,16 @@
   }
 
   .dark {
+    --gh-primary: #3D56A6; /* lighter version of Deep Navy */
+    --gh-secondary: #FFD166;
+    --gh-background: #121212;
+    --gh-text-primary: #F8F9FA; /* Off-White */
+    --gh-lavender: #7B68EE;
+    --gh-teal: #3CAEA3;
+    --gh-text-secondary: #D1D5DB;
+    --gh-text-subtitle: #A3A3A3;
+    --gh-text-highlight: #9CA3AF;
+
     --tremor-brand-faint: #eff6ff;
     --tremor-brand-muted: #bfdbfe;
     --tremor-brand-subtle: #60a5fa;

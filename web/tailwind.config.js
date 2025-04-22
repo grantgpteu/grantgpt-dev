@@ -12,4 +12,6 @@ const customThemes = process.env.NEXT_PUBLIC_THEME
   : null;
 
 /** @type {import('tailwindcss').Config} */
-module.exports = customThemes ? merge(baseThemes, customThemes) : baseThemes;
+const grantgptTheme = require('./tailwind-themes/grantgpt-theme.js');
+
+module.exports = merge({}, baseThemes, grantgptTheme);
