@@ -85,7 +85,7 @@ export default function FixedLogo({
     <>
       <Link
         href="/chat"
-        className="fixed cursor-pointer flex z-40 left-4 top-4 h-16 mb-8 pointer-events-auto"  // Adjusted spacing and added pointer-events
+        className="fixed cursor-pointer flex z-40 left-4 top-1 h-16 mb-8 pointer-events-auto"  // Changed top-4 to top-1
       >
         <LogoComponent
           enterpriseSettings={enterpriseSettings!}
