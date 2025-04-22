@@ -535,7 +535,6 @@ code[class*="language-"] {
 .code-line .token.italic {
   font-style: theme("fontStyle.token-italic");
   }
-}
 
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
