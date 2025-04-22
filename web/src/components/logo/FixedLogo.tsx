@@ -35,7 +35,7 @@ export const LogoComponent = memo(function LogoComponent({
   return (
     <div
       onClick={isAdmin ? () => router.push("/chat") : () => {}}
-      className={`max-w-[200px]
+      className={`max-w-[300px]  // Increased from 200px to 300px
         ${!show && "mobile:hidden"}
        flex text-text-900 items-center gap-x-1 cursor-pointer`} // Added cursor-pointer for clarity
     >
@@ -85,12 +85,12 @@ export default function FixedLogo({
     <>
       <Link
         href="/chat"
-        className="fixed cursor-pointer flex z-40 left-4 top-6 h-16"  // Adjusted height and top spacing
+        className="fixed cursor-pointer flex z-40 left-4 top-4 h-16 mb-8 pointer-events-auto"  // Adjusted spacing and added pointer-events
       >
         <LogoComponent
           enterpriseSettings={enterpriseSettings!}
           backgroundToggled={backgroundToggled}
-          show={true} // Ensure LogoComponent is shown by default here
+          show={true}
         />
       </Link>
       <div className="mobile:hidden fixed left-4 bottom-4">
