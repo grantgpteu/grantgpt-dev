@@ -70,7 +70,7 @@
      * --------------------------------- */
     --neutral-50: #fafafa;
     --neutral-100: #f5f5f5;
-    --neutral-125: #f1f2f4; /* You had background-125 & text-125 as #f1f2f4 */
+    --neutral-125: #F8F9FA; /* You had background-125 & text-125 as #f1f2f4 */
     --neutral-150: #eaeaea;
     --neutral-200: #d4d4d4;
     --neutral-300: #d4d4d4;
@@ -89,8 +89,8 @@
     /* -------------------------------------------------------
      * 2. Keep special, custom, or near-duplicate background
      * ------------------------------------------------------- */
-    --background-input-background: #fefcfa;
-    --input-background: #fefcfa;
+    --background-input-background: #F8F9FA;
+    --input-background: #F8F9FA;
     --input-border: #f1eee8;
     --text-text: #f4f2ed;
     --background-dark: #141414;
@@ -173,18 +173,18 @@
     --scrollbar-dark-thumb-hover: #c7cdd2;
 
     /* agent references */
-    --agent-sidebar: #be5d0e;
-    --agent-hovered: #d16b10;
-    --agent: #e47011;
-    --lighter-agent: #f59e0b;
+    --agent-sidebar: #0A2463;
+    --agent-hovered: #0A2463;
+    --agent: #0A2463;
+    --lighter-agent: #7B68EE;
 
     /* Consolidated color variables */
     --neutral-100-border-light: #f5f5f5;
     --neutral-300-border-medium: #d4d4d4;
     --neutral-400-border-strong: #a3a3a3;
-    --background-input-background: #fefcfa;
-    --background-chatbar-sidebar: #f5f3ee;
-    --background-chat-hover-selected: #e6e3dd;
+    --background-input-background: #F8F9FA;
+    --background-chatbar-sidebar: #F8F9FA;
+    --background-chat-hover-selected: #F8F9FA;
     --white-card-popover: #ffffff;
     --card-popover-foreground: #0c0c0c;
 
@@ -415,10 +415,10 @@ textarea {
 
   background: linear-gradient(
     -90deg,
-    #5c5c5c 0%,
+    #F8F9FA 0%,
     #ffffff 5%,
-    #5c5c5c 10%,
-    #5c5c5c 100%
+    #F8F9FA 10%,
+    #F8F9FA 100%
   );
   background-size: 200% 100%;
   background-clip: text;
