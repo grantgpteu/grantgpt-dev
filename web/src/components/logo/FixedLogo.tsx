@@ -39,10 +39,10 @@ export const LogoComponent = memo(function LogoComponent({
         ${!show && "mobile:hidden"}
        flex text-text-900 items-center gap-x-1 cursor-pointer`} // Added cursor-pointer for clarity
     >
-      {/* Always display the logo from public/logo.svg */}
+      {/* Always display the logo from public/logotype.png */}
       <div className="flex-none my-auto">
         <Image
-          src="/logo.svg" // Path relative to the public folder
+          src="/logotype.png" // Path relative to the public folder
           alt="GrantGPT Logo" // Updated Alt text
           width={24} // Set desired width
           height={24} // Set desired height
