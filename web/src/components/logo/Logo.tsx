@@ -1,62 +1,43 @@
 "use client";
 
-import { useContext } from "react";
-import { SettingsContext } from "../settings/SettingsProvider";
-import { OnyxIcon, OnyxLogoTypeIcon } from "../icons/icons";
+import Image from "next/image"; // Import Next.js Image component
+// Removed unused imports:
+// import { useContext } from "react";
+// import { SettingsContext } from "../settings/SettingsProvider";
+import { OnyxLogoTypeIcon } from "../icons/icons"; // Keep this for LogoType
 
 export function Logo({
   height,
   width,
   className,
-  size = "default",
 }: {
   height?: number;
   width?: number;
   className?: string;
-  size?: "small" | "default" | "large";
+  // Removed size prop as height/width are now explicit or defaulted here
 }) {
-  const settings = useContext(SettingsContext);
-
-  const sizeMap = {
-    small: { height: 24, width: 22 },
-    default: { height: 32, width: 30 },
-    large: { height: 48, width: 45 },
-  };
-
-  const { height: defaultHeight, width: defaultWidth } = sizeMap[size];
-  height = height || defaultHeight;
-  width = width || defaultWidth;
-
-  if (
-    !settings ||
-    !settings.enterpriseSettings ||
-    !settings.enterpriseSettings.use_custom_logo
-  ) {
-    return (
-      <div style={{ height, width }} className={className}>
-        <OnyxIcon
-          size={height}
-          className={`${className} dark:text-[#fff] text-[#000]`}
-        />
-      </div>
-    );
-  }
+  // Provide default dimensions if not passed
+  const displayHeight = height || 32;
+  const displayWidth = width || 32; // Adjust default width if needed for aspect ratio
 
   return (
+    // The outer div might still be useful for positioning/styling with className
     <div
-      style={{ height, width }}
-      className={`flex-none relative ${className}`}
+      style={{ height: displayHeight, width: displayWidth }}
+      className={`flex-none relative ${className || ""}`} // Ensure className is applied
     >
-      {/* TODO: figure out how to use Next Image here */}
-      <img
-        src="/api/enterprise-settings/logo"
-        alt="Logo"
-        style={{ objectFit: "contain", height, width }}
+      <Image
+        src="/logo.svg" // Path relative to the public folder
+        alt="GrantGPT Logo" // Updated Alt text
+        height={displayHeight} // Use the determined height
+        width={displayWidth} // Use the determined width
+        style={{ objectFit: "contain" }} // Keep objectFit if needed
       />
     </div>
   );
 }
 
+// LogoType component remains unchanged, but might be unused elsewhere now
 export function LogoType({
   size = "default",
 }: {

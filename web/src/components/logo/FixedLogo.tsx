@@ -1,14 +1,15 @@
 "use client";
 
-import React, { memo } from "react";
+import React, { memo, useContext } from "react"; // Added useContext import
+import Image from "next/image"; // Import the Next.js Image component
 import { HeaderTitle } from "@/components/header/HeaderTitle";
-import { Logo } from "@/components/logo/Logo";
+// Removed unused Logo import: import { Logo } from "@/components/logo/Logo";
 import { SettingsContext } from "@/components/settings/SettingsProvider";
 import { NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED } from "@/lib/constants";
 import Link from "next/link";
-import { useContext } from "react";
+// Removed unused useContext import: import { useContext } from "react";
 import { FiSidebar } from "react-icons/fi";
-import { LogoType } from "@/components/logo/Logo";
+// Removed unused LogoType import: import { LogoType } from "@/components/logo/Logo";
 import { EnterpriseSettings } from "@/app/admin/settings/interfaces";
 import { useRouter } from "next/navigation";
 
@@ -25,36 +26,53 @@ export const LogoComponent = memo(function LogoComponent({
 }) {
   const router = useRouter();
 
+  // Determine the application name to display, defaulting if necessary
+  // or leaving it empty if only the logo should show when not configured.
+  // If you ALWAYS want a name, you could default here:
+  // const appName = enterpriseSettings?.application_name || "GrantGPT";
+  const appName = enterpriseSettings?.application_name; // Use configured name only
+
   return (
     <div
       onClick={isAdmin ? () => router.push("/chat") : () => {}}
       className={`max-w-[200px]
         ${!show && "mobile:hidden"}
-       flex text-text-900 items-center gap-x-1`}
+       flex text-text-900 items-center gap-x-1 cursor-pointer`} // Added cursor-pointer for clarity
     >
-      {enterpriseSettings && enterpriseSettings.application_name ? (
-        <>
-          <div className="flex-none my-auto">
-            <Logo height={24} width={24} />
-          </div>
-          <div className="w-full">
-            <HeaderTitle backgroundToggled={backgroundToggled}>
-              {enterpriseSettings.application_name}
-            </HeaderTitle>
-            {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED && (
-              <p className="text-xs text-left text-subtle whitespace-nowrap overflow-hidden text-ellipsis">
-                Powered by Onyx
-              </p>
-            )}
-          </div>
-        </>
+      {/* Always display the logo from public/logo.svg */}
+      <div className="flex-none my-auto">
+        <Image
+          src="/logo.svg" // Path relative to the public folder
+          alt="GrantGPT Logo" // Updated Alt text
+          width={24} // Set desired width
+          height={24} // Set desired height
+        />
+      </div>
+
+      {/* Conditionally display the application name and powered by text */}
+      {appName ? (
+        <div className="w-full overflow-hidden"> {/* Added overflow-hidden */}
+          <HeaderTitle backgroundToggled={backgroundToggled}>
+            {appName}
+          </HeaderTitle>
+          {!NEXT_PUBLIC_DO_NOT_USE_TOGGLE_OFF_DANSWER_POWERED && (
+            <p className="text-xs text-left text-subtle whitespace-nowrap overflow-hidden text-ellipsis">
+              Powered by GrantGPT {/* Updated text */}
+            </p>
+          )}
+        </div>
       ) : (
-        <LogoType />
+        // If no application name is set, you might want a default title
+        // or just show the logo. Set to null to show only the logo.
+         null
+        // Example with default title:
+        // <HeaderTitle backgroundToggled={backgroundToggled}>GrantGPT</HeaderTitle>
       )}
     </div>
   );
 });
 
+// FixedLogo component remains unchanged as it uses LogoComponent
 export default function FixedLogo({
   backgroundToggled,
 }: {
@@ -72,6 +90,7 @@ export default function FixedLogo({
         <LogoComponent
           enterpriseSettings={enterpriseSettings!}
           backgroundToggled={backgroundToggled}
+          show={true} // Ensure LogoComponent is shown by default here
         />
       </Link>
       <div className="mobile:hidden fixed left-4 bottom-4">
