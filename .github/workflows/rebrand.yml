@@ -1,0 +1,261 @@
+name: Apply GrantGPT Rebranding
+
+on:
+  workflow_dispatch: # Allows manual triggering
+
+permissions:
+  contents: write # Required to push changes back to the repository
+
+jobs:
+  rebrand:
+    runs-on: ubuntu-latest
+    env:
+      BRAND_NAME: "GrantGPT"
+      LOGO_PATH: "GrantHive-logo"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history to properly push changes
+          token: ${{ secrets.GITHUB_TOKEN }} # Use the default GITHUB_TOKEN with write permissions
+      
+      - name: Setup Node.js # Added earlier, ensure it's here
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use your project's Node.js version
+
+      - name: Install Root Dependencies # ADD THIS STEP
+        run: npm ci # Install dependencies from root package-lock.json (including ts-morph)
+
+      - name: "Debug: List files targeted for rebranding"
+        run: |
+          echo "Files targeted for text replacement:"
+          find ./web/src ./backend/onyx ./README.md \
+            \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
+            -type f \
+            -print
+
+      - name: Apply Text Rebranding (Onyx -> GrantGPT)
+        run: |
+          echo "Starting text replacement..."
+          # Target specific file types and directories
+          # Use patterns to match "Onyx" within quotes or JSX text, avoiding variable/function names
+          find ./web/src ./backend/onyx ./README.md \
+            \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.md" \) \
+            -type f \
+            -exec sed -i.bak -E \
+              -e 's/"\\bOnyx\\b"/"${BRAND_NAME}"/g' \
+              -e 's/>\\bOnyx\\b</>"${BRAND_NAME}"</g' \
+              {} +
+          echo "Text replacement attempted (using safer patterns and -i.bak syntax)."
+
+      - name: Apply Specific Text Rebranding
+        run: |
+          echo "Applying specific text replacements..."
+          # ChatPopup.tsx
+          sed -i 's/Welcome to ${enterpriseSettings?.name || "Onyx"}!/Welcome to ${enterpriseSettings?.name || "${BRAND_NAME}"}!/g' web/src/app/chat/ChatPopup.tsx
+          # OnyxInitializingLoader.tsx
+          sed -i 's/Initializing {settings?.enterpriseSettings?.name ?? "Onyx"}/Initializing {settings?.enterpriseSettings?.name ?? "${BRAND_NAME}"}/g' web/src/components/OnyxInitializingLoader.tsx
+          # layout.tsx title
+          sed -i 's/title: enterpriseSettings?.name || "Onyx"/title: enterpriseSettings?.name || "${BRAND_NAME}"/g' web/src/app/layout.tsx
+          # layout.tsx description
+          sed -i 's/description: "Question answering for your documents"/description: "Matching you with the perfect Grants"/g' web/src/app/layout.tsx
+          # WhitelabelingForm.tsx
+          sed -i 's/values.application_name || "Onyx"/values.application_name || "${BRAND_NAME}"/g' web/src/app/ee/admin/whitelabeling/WhitelabelingForm.tsx
+          # LoginText.tsx
+          sed -i 's/{(settings && settings?.enterpriseSettings?.name) || "Onyx"}/{(settings && settings?.enterpriseSettings?.name) || "${BRAND_NAME}"}/g' web/src/app/auth/login/LoginText.tsx
+          # AssistantCard.tsx
+          sed -i 's/By {persona.owner?.email || "Onyx"}/By {persona.owner?.email || "${BRAND_NAME}"}/g' web/src/app/assistants/mine/AssistantCard.tsx
+          echo "Specific text replacements applied."
+
+      - name: Clean up backup files
+        run: |
+          echo "Cleaning up .bak files created by sed..."
+          find . -name '*.bak' -delete
+          echo "Backup files cleaned up."
+
+      - name: Replace Logos
+        run: |
+          # Ensure the target directory exists
+          mkdir -p web/public
+          # Copy GrantGPT logos over Onyx logos
+          # Assumes GrantHive-logo directory is present at the root of the repo
+          # If GrantHive-logo is not in the repo, this step needs adjustment (e.g., checkout another repo, download)
+          if [ -f "${LOGO_PATH}/logo.svg" ]; then
+            cp "${LOGO_PATH}/logo.svg" web/public/logo.svg
+            echo "Replaced onyx-logo.svg"
+          else
+            echo "Warning: ${LOGO_PATH}/logo.svg not found."
+          fi
+          if [ -f "${LOGO_PATH}/logo.png" ]; then
+            cp "${LOGO_PATH}/logo.png" web/public/logo.png
+            cp "${LOGO_PATH}/logo.png" web/public/logo-dark.png
+            echo "Replaced onyx logo.png"
+          else
+            echo "Warning: ${LOGO_PATH}/logo.png not found."
+          fi
+          if [ -f "${LOGO_PATH}/favicon.ico" ]; then
+            cp "${LOGO_PATH}/favicon.ico" web/public/onyx.ico
+            echo "Replaced onyx.ico"
+          else
+            echo "Warning: ${LOGO_PATH}/favicon.ico not found."
+          fi
+
+      # Removed separate install steps for typescript/@types/node as npm ci should handle them if they are in package.json
+      # - name: Install TypeScript
+      #   run: npm install -g typescript
+      # - name: Install dependencies
+      #   run: npm install --save-dev @types/node typescript
+      # - name: Verify Type Definitions
+      #   run: npm ls @types/node
+
+      - name: Compile TypeScript
+        run: |
+          set -e # Exit immediately if a command exits with a non-zero status.
+          echo "Current directory: $(pwd)"
+          echo "Compiling TypeScript in scripts directory..."
+          cd scripts
+          echo "Now in directory: $(pwd)"
+          ls -la # List files before compiling
+          tsc --project tsconfig.json
+          # Check exit code of tsc explicitly
+          if [ $? -ne 0 ]; then
+            echo "TypeScript compilation failed!"
+            exit 1
+          fi
+          echo "TypeScript compilation finished. Checking output..."
+          ls -la dist # List files after compiling
+          cd .. # Go back to the root directory
+          echo "Back in directory: $(pwd)"
+
+      - name: Debug - Show icons.tsx BEFORE script
+        run: |
+          echo "Content of web/src/components/icons/icons.tsx BEFORE replacement:"
+          cat web/src/components/icons/icons.tsx || echo "icons.tsx not found before script!"
+          echo "--- End of icons.tsx content ---"
+
+      - name: Replace Hardcoded SVG Icons
+        run: |
+          set -e # Exit immediately if a command exits with a non-zero status.
+          echo "Running script to replace hardcoded SVG icons..."
+          
+          # Verify the source icons.tsx file exists before running the script
+          SOURCE_ICON_FILE="web/src/components/icons/icons.tsx"
+          if [ ! -f "$SOURCE_ICON_FILE" ]; then
+            echo "Error: Source file $SOURCE_ICON_FILE not found!"
+            exit 1
+          fi
+          echo "Source file $SOURCE_ICON_FILE found."
+
+          # Point back to the .js file, Node will treat it as ESM due to scripts/package.json
+          SCRIPT_PATH="scripts/dist/replace-icons.js" 
+          if [ -f "$SCRIPT_PATH" ]; then
+            echo "Executing node $SCRIPT_PATH..."
+            node "$SCRIPT_PATH" # Execute the .js script (as an ES Module)
+            # Check exit code of node script explicitly
+            if [ $? -ne 0 ]; then
+              echo "Node script execution failed!"
+              exit 1
+            fi
+            echo "Icon replacement script executed successfully."
+          else
+            echo "Error: $SCRIPT_PATH not found after compilation."
+            # Optional: List files in dist to help debug
+            echo "Contents of scripts/dist:"
+            ls -la scripts/dist || echo "scripts/dist directory not found."
+            exit 1  # Fail the workflow if the script doesn't exist
+          fi
+          
+          # Verification step remains the same
+          if ! git diff --quiet web/src/components/icons/icons.tsx; then
+            echo "Verified: web/src/components/icons/icons.tsx was modified by the script."
+          else
+            echo "Error: web/src/components/icons/icons.tsx was NOT modified by the script. Exiting."
+            exit 1 # Fail if the target file wasn't changed
+          fi
+
+      - name: Debug - Show icons.tsx AFTER script
+        run: |
+          echo "Content of web/src/components/icons/icons.tsx AFTER replacement attempt:"
+          cat web/src/components/icons/icons.tsx || echo "icons.tsx not found after script!"
+          echo "--- End of icons.tsx content ---"
+
+      - name: Apply Design & Color Adjustments
+        run: |
+          # Target the global CSS file where Onyx variables are defined
+          TARGET_FILE="./web/src/app/globals.css"
+          if [ -f "$TARGET_FILE" ]; then
+            echo "Applying color changes to $TARGET_FILE"
+
+            # Use sed with specific variable definitions found in globals.css
+            # Escape special characters like '/' in sed patterns if needed, but hex codes are safe.
+            # Use a different delimiter like '|' if '/' causes issues with paths/values.
+
+            # Light Mode (:root) Replacements
+            sed -i 's/--background: #fefcfa;/--background: #F8F9FA;/g' $TARGET_FILE
+            sed -i 's/--primary: 0 0% 9%;/--primary: #133075;/g' $TARGET_FILE # Mapped to GrantGPT Navy Text
+            sed -i 's/--secondary: 0 0% 96.1%;/--secondary: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--accent: 0 0% 96.1%;/--accent: #7B68EE;/g' $TARGET_FILE # Mapped to GrantGPT Lavender
+            sed -i 's/--link: #3b82f6;/--link: #0A2463;/g' $TARGET_FILE # Mapped to GrantGPT Navy
+            sed -i 's/--neutral-800: #262626;/--neutral-800: #133075;/g' $TARGET_FILE # Mapped to GrantGPT Navy Text
+            sed -i 's/--neutral-900: #111827;/--neutral-900: #133075;/g' $TARGET_FILE # Mapped to GrantGPT Navy Text
+            sed -i 's/--neutral-500: #737373;/--neutral-500: #5D5B8D;/g' $TARGET_FILE # Mapped to GrantGPT Muted Lavender
+            sed -i 's/--agent: #e47011;/--agent: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--agent-sidebar: #be5d0e;/--agent-sidebar: #0A2463;/g' $TARGET_FILE # Mapped to GrantGPT Navy
+            sed -i 's/--alert: #f59e0b;/--alert: #FFD166;/g' $TARGET_FILE # Mapped to GrantGPT Honey Gold
+            sed -i 's/--success: #030706;/--success: #3CAEA3;/g' $TARGET_FILE # Mapped to GrantGPT Teal
+            sed -i 's/--light-success: #22c55e;/--light-success: #3CAEA3;/g' $TARGET_FILE # Mapped to GrantGPT Teal
+
+            # Dark Mode (.dark) Replacements
+            sed -i 's/--background-input-background: #1f1f1f;/--background-input-background: #121212;/g' $TARGET_FILE
+            sed -i 's/--card: #1f1f1f;/--card: #1E1E1E;/g' $TARGET_FILE
+            sed -i 's/--primary: 0 0% 80%;/--primary: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
+            sed -i 's/--neutral-950: #f0f0f0;/--neutral-950: #F8F9FA;/g' $TARGET_FILE # Mapped to GrantGPT Dark Text
+            sed -i 's/--neutral-800: #d4d4d4;/--neutral-800: #F8F9FA;/g' $TARGET_FILE # Mapped to GrantGPT Dark Text
+            # Note: Replacing border with rgba requires careful escaping if using '/' delimiter. Using '|' instead.
+            sed -i 's|--border: #5a5a5a;|--border: rgba(255, 255, 255, 0.1);|g' $TARGET_FILE # Mapped to GrantGPT Dark Border
+            sed -i 's/--agent: #e47011;/--agent-sidebar: #3D56A6;/g' $TARGET_FILE # Mapped to GrantGPT Dark Primary
+
+            echo "Color adjustments applied to $TARGET_FILE."
+          else
+            echo "Warning: $TARGET_FILE not found. Skipping color adjustments."
+          fi
+
+          if [ -f "$EMAIL_PASSWORD_FORM" ]; then
+            echo "Applying styling changes to Login Button in ./web/src/app/auth/login/EmailPasswordForm.tsx"
+            # Remove variant="agent"
+            sed -i 's/variant="agent"//g' "$EMAIL_PASSWORD_FORM"
+            echo "Login button styling applied."
+          else
+            echo "Warning: $EMAIL_PASSWORD_FORM not found. Skipping login button styling."
+          fi
+
+          if [ -f "$BUTTON_COMPONENT" ]; then
+            echo "Updating default button variant in ./web/src/components/ui/button.tsx"
+            # Update default button variant to use CSS variables
+            sed -i 's/"bg-neutral-900 border-border text-neutral-50 hover:bg-neutral-900\/90 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"/"bg-primary text-primary-foreground hover:bg-primary\/90"/g' "$BUTTON_COMPONENT"
+            echo "Default button variant updated."
+          else
+            echo "Warning: $BUTTON_COMPONENT not found. Skipping button variant update."
+          fi
+
+          echo "Design and color adjustments step complete."
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Check if there are any changes
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "No changes to commit."
+          exit 0
+          fi
+
+          git add .
+          git commit -m "chore: Apply automated GrantGPT rebranding"
+          # Push to the branch that triggered the workflow
+          # Note: Since this only runs on workflow_dispatch, github.ref_name might not be what's expected.
+          # Consider adding an input to specify the branch or pushing to a fixed branch like 'main'.
+          git push origin HEAD:${{ github.ref_name }}
+          echo "Committed and pushed rebranding changes."
