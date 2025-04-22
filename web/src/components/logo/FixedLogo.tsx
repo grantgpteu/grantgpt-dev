@@ -44,8 +44,8 @@ export const LogoComponent = memo(function LogoComponent({
         <Image
           src="/logotype.png" // Path relative to the public folder
           alt="GrantGPT Logo" // Updated Alt text
-          width={200} // Updated to 200px width
-          height={60} // Updated to 60px height to maintain proportion
+          width={130} // Updated to 200px width
+          height={39} // Updated to 60px height to maintain proportion
         />
       </div>
 
