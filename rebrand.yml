@@ -1,0 +1,52 @@
+rebranding_summary:
+  text_updates:
+    - description: "Replaced 'Onyx' with 'GrantGPT' in UI components and text."
+      commits:
+        - abbba5da0
+        - 83f170dac
+        - 1f9a7483f # Includes fallback name update
+      files_affected:
+        - "web/src/components/"
+        - "web/src/app/"
+  logo_updates:
+    - description: "Refactored logo components, updated dimensions, positioning, and source files."
+      commits:
+        - 8ce19109f
+        - 4dce9b437
+        - f674b5646
+        - 1f9a7483f
+        - d6c63eceb
+      files_affected:
+        - "web/src/components/logo/FixedLogo.tsx"
+        - "web/src/components/logo/Logo.tsx"
+    - description: "Replaced logo image assets and favicon."
+      commits:
+        - e778a410b
+      files_affected:
+        - "web/public/logo.png"
+        - "web/public/logo.svg"
+        - "web/public/logotype-dark.png"
+        - "web/public/logotype.png"
+        - "web/public/onyx.ico" # Replaced with GrantGPT favicon
+  color_and_theme_updates:
+    - description: "Updated global CSS with new color variables based on GrantGPT branding."
+      commits:
+        - 419f2168a
+        - 891c9d35e
+      files_affected:
+        - "web/src/app/globals.css"
+    - description: "Added GrantGPT theme file and integrated into Tailwind config and global styles."
+      commits:
+        - 6028d4eda
+      files_affected:
+        - "web/tailwind-themes/grantgpt-theme.js"
+        - "web/tailwind.config.js"
+        - "web/src/app/globals.css"
+        - "web/src/app/layout.tsx"
+  process_updates:
+    - description: "Added rebranding workflow and updated memory bank documentation related to rebranding."
+      commits:
+        - e778a410b
+      files_affected:
+        - ".github/workflows/rebrand.yml"
+        - "memory-bank/"
