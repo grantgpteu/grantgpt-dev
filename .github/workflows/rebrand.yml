@@ -24,8 +24,13 @@ jobs:
         with:
           node-version: '20' # Use your project's Node.js version
 
-      - name: Install Root Dependencies # ADD THIS STEP
-        run: npm ci # Install dependencies from root package-lock.json (including ts-morph)
+      - name: Install Root Dependencies
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "package-lock.json not found, generating it..."
+            npm install
+          fi
+          npm ci
 
       - name: "Debug: List files targeted for rebranding"
         run: |
