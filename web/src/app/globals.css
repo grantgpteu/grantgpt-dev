@@ -175,7 +175,7 @@
     /* agent references */
     --agent-sidebar: #0A2463;
     --agent-hovered: #0A2463;
-    --agent: #0A2463;
+    --agent: var(--gh-text-secondary);
     --lighter-agent: #7B68EE;
 
     /* Consolidated color variables */
