@@ -25,6 +25,7 @@ jobs:
           node-version: '20' # Use your project's Node.js version
 
       - name: Install Root Dependencies
+        working-directory: web
         run: |
           if [ ! -f package-lock.json ]; then
             echo "package-lock.json not found, generating it..."
