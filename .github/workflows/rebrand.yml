@@ -123,6 +123,8 @@ jobs:
           cd scripts
           echo "Now in directory: $(pwd)"
           ls -la # List files before compiling
+          npm ci # Install dependencies for the script
+          echo "Running tsc..."
           tsc --project tsconfig.json
           # Check exit code of tsc explicitly
           if [ $? -ne 0 ]; then

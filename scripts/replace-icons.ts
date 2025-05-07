@@ -1,9 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const iconsFilePath = path.join(__dirname, '../../web/src/components/icons/icons.tsx');
 
-fs.readFile(iconsFilePath, 'utf8', (err, data) => {
+fs.readFile(iconsFilePath, 'utf8', (err: NodeJS.ErrnoException | null, data: string) => {
   if (err) {
     console.error('Error reading icons.tsx:', err);
     return;
@@ -53,7 +56,7 @@ fs.readFile(iconsFilePath, 'utf8', (err, data) => {
   }
 
 
-  fs.writeFile(iconsFilePath, modifiedContent, 'utf8', (err) => {
+  fs.writeFile(iconsFilePath, modifiedContent, 'utf8', (err: NodeJS.ErrnoException | null) => {
     if (err) {
       console.error('Error writing to icons.tsx:', err);
       return;

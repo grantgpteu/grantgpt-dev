@@ -2,5 +2,8 @@
   "name": "rebranding-scripts",
   "version": "1.0.0",
   "type": "module",
-  "description": "Scripts for rebranding GrantGPT."
+  "description": "Scripts for rebranding GrantGPT.",
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
 }
