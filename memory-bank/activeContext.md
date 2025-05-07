@@ -29,6 +29,9 @@
 *   **Applied Rebranding:** Applied text and visual rebranding by creating `web/tailwind-themes/grantgpt-theme.js` and updating `web/src/app/globals.css` and `web/src/app/layout.tsx`.
 *   **Encountered Issues:** Experienced difficulties with `replace_in_file` and switched to using `write_to_file` to update `web/src/app/globals.css`.
 *   **Workflow Fix (2025-05-06):** Updated `.github/workflows/rebrand.yml` to ensure `package-lock.json` is generated if missing before `npm ci` is run, resolving a potential workflow failure.
+*   **AgenticToggle Styling (2025-05-06):**
+    *   Modified `web/src/app/chat/input/AgenticToggle.tsx` to use `bg-secondary` for the track's background when the toggle is in the "on" state.
+    *   Updated `.github/workflows/rebrand.yml` to include this specific `AgenticToggle.tsx` modification in the automated rebranding process.
 
 ## Next Steps
 

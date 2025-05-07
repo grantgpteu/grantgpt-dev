@@ -13,6 +13,9 @@
 *   **Git Remotes:** Configured correctly (`origin` for push, `upstream` for fetch).
 *   **Rebranding Applied:** Text and visual rebranding applied to codebase (creation of `grantgpt-theme.js`, updates to `globals.css` and `layout.tsx`).
 *   **Workflow Robustness:** Improved the `rebrand.yml` GitHub Actions workflow to handle missing `package-lock.json` files.
+*   **Specific Component Styling:**
+    *   Updated `AgenticToggle.tsx` for correct "on" state background.
+    *   Integrated this `AgenticToggle.tsx` change into the `rebrand.yml` workflow.
 
 ## What's Left to Build / Do
 
@@ -29,7 +32,7 @@
 *   **Rebranding:** The codebase has been automatically rebranded (text, logos, CSS colors) via the `rebrand.yml` workflow and manually updated in `web/src/app/globals.css` and `web/src/app/layout.tsx`. Visual confirmation is pending.
 *   **Workflow/Scripts:**
     *   The deployment workflow (`.github/workflows/deploy-dev.yml`) and the Let's Encrypt script (`deployment/docker_compose/init-letsencrypt.sh`) have been updated on `origin/main`.
-    *   The `.github/workflows/rebrand.yml` workflow was updated to robustly handle `npm ci` by ensuring `package-lock.json` exists.
+    *   The `.github/workflows/rebrand.yml` workflow was updated to robustly handle `npm ci` by ensuring `package-lock.json` exists, and to include specific styling for `AgenticToggle.tsx`.
 *   **Local State:** The local repository is currently *behind* `origin/main` and reflects an older state from 2025-09-04.
 *   **Previous State (as of 2025-09-04):**
     *   Repository was reset to `upstream/main` (`9b6c762...`) preserving `.github` from `6765905...`. Local HEAD was `46b0a04...`.

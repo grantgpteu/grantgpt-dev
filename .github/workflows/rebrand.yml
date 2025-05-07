@@ -245,6 +245,16 @@ jobs:
             echo "Warning: $BUTTON_COMPONENT not found. Skipping button variant update."
           fi
 
+          AGENTIC_TOGGLE_FILE="./web/src/app/chat/input/AgenticToggle.tsx"
+          if [ -f "$AGENTIC_TOGGLE_FILE" ]; then
+            echo "Applying styling changes to AgenticToggle in $AGENTIC_TOGGLE_FILE"
+            # Add bg-secondary to the 'on' state of the toggle track
+            sed -i 's|? "border-background-200 group-hover:border\[#000\] dark:group-hover:border-neutral-300"|? "bg-secondary border-background-200 group-hover:border\[#000\] dark:group-hover:border-neutral-300"|g' "$AGENTIC_TOGGLE_FILE"
+            echo "AgenticToggle styling applied."
+          else
+            echo "Warning: $AGENTIC_TOGGLE_FILE not found. Skipping AgenticToggle styling."
+          fi
+
           echo "Design and color adjustments step complete."
 
       - name: Commit and Push Changes
