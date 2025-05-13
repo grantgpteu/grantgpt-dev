@@ -157,9 +157,20 @@ class IndexingCallbackBase(IndexingHeartbeatInterface):
                 self.last_lock_monotonic = time.monotonic()
 
             self.last_tag = tag
+        except redis.exceptions.LockNotOwnedError:
+            logger.warning(
+                f"{self.__class__.__name__} - lock.reacquire failed as lock not owned: "
+                f"lock_timeout={self.redis_lock.timeout} "
+                f"start={self.started} "
+                f"last_tag={self.last_tag} "
+                f"last_reacquired={self.last_lock_reacquire} "
+                f"now={datetime.now(timezone.utc)}. "
+                "Skipping reacquire."
+            )
+            # Do not re-raise, allow progress to continue
         except LockError:
             logger.exception(
-                f"{self.__class__.__name__} - lock.reacquire exceptioned: "
+                f"{self.__class__.__name__} - lock.reacquire exceptioned with other LockError: "
                 f"lock_timeout={self.redis_lock.timeout} "
                 f"start={self.started} "
                 f"last_tag={self.last_tag} "
