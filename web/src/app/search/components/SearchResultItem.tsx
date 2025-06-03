@@ -3,6 +3,7 @@ import { OnyxDocument } from "@/lib/search/interfaces";
 import { ResultIcon } from "@/components/chat/sources/SourceCard";
 import { getTimeAgoString } from "@/lib/dateUtils";
 import { FiThumbsUp, FiClock } from "react-icons/fi";
+import { openDocument } from "@/lib/search/utils";
 
 interface SearchResultItemProps {
   document: OnyxDocument;
@@ -12,7 +13,7 @@ interface SearchResultItemProps {
 export function SearchResultItem({ document, onClick }: SearchResultItemProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    onClick(document);
+    openDocument(document, onClick);
   };
 
   // Format the date if available

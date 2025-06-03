@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { OnyxDocument } from "@/lib/search/interfaces";
 import { FiChevronDown, FiChevronUp, FiFile } from "react-icons/fi";
 
+import { openDocument } from "@/lib/search/utils";
+
 interface DocumentsDisplayProps {
   documents: OnyxDocument[];
+  updatePresentingDocument: (document: OnyxDocument) => void;
 }
 
-const DocumentsDisplay: React.FC<DocumentsDisplayProps> = ({ documents }) => {
+const DocumentsDisplay: React.FC<DocumentsDisplayProps> = ({ documents, updatePresentingDocument }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
@@ -23,9 +26,10 @@ const DocumentsDisplay: React.FC<DocumentsDisplayProps> = ({ documents }) => {
       {isExpanded && (
         <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {documents.map((doc, index) => (
-            <div
+            <button
               key={index}
-              className="bg-white p-4 rounded-lg shadow-sm border border-background-100"
+              onClick={() => openDocument(doc, updatePresentingDocument)}
+              className="bg-white p-4 rounded-lg shadow-sm border border-background-100 text-left cursor-pointer hover:bg-gray-50"
             >
               <div className="flex items-start space-x-3">
                 <FiFile className="text-text-400 mt-1" />
@@ -38,7 +42,7 @@ const DocumentsDisplay: React.FC<DocumentsDisplayProps> = ({ documents }) => {
                   </p>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}

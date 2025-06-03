@@ -46,18 +46,22 @@ const QuoteDisplay = ({ quoteInfo }: { quoteInfo: Quote }) => {
           </div>
         </div>
       )}
-      <button className="text-sm flex w-fit">
-        <a
-          className="flex max-w-[250px] shrink box-border p-2 border border-border rounded-lg hover:bg-accent-background"
-          href={quoteInfo.link || undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <SourceIcon sourceType={quoteInfo.source_type} iconSize={18} />
-          <p className="truncate break-all ml-2 mr-2">
-            {quoteInfo.semantic_identifier || quoteInfo.document_id}
-          </p>
-        </a>
+      <button
+        className="text-sm flex w-fit max-w-[250px] shrink box-border p-2 border border-border rounded-lg hover:bg-accent-background"
+        onClick={() => {
+          if (quoteInfo.link) {
+            window.open(quoteInfo.link, "_blank", "noopener noreferrer");
+          } else {
+            // TODO: Implement fallback to open parent document by quoteInfo.document_id if possible.
+            // For now, if no link is available, do nothing.
+            console.log("No external link available for this quote.");
+          }
+        }}
+      >
+        <SourceIcon sourceType={quoteInfo.source_type} iconSize={18} />
+        <p className="truncate break-all ml-2 mr-2">
+          {quoteInfo.semantic_identifier || quoteInfo.document_id}
+        </p>
       </button>
     </div>
   );
